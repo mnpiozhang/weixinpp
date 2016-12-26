@@ -1,5 +1,5 @@
 # weixinpp
-微信后台，可以返回服务器相关信息。后台用flask做的，需要安装下的的包
+微信后台，可以返回服务器相关信息（还没做完= =）。后台用flask做的，需要安装下的的包
 ####pip install flask
 ####pip install psutil    
 启动 
