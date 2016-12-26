@@ -3,9 +3,10 @@
 from flask import Flask
 from flask import request
 import hashlib
-import  xml.etree.ElementTree as xmlee
-from xmlanalysis import TextMsg
-import reply
+from common import solve_request
+from utils import resp_content
+from xmlobjs import TextMsg,TextReplyMsg,BaseEvent
+
 
 app = Flask(__name__)
 
@@ -23,7 +24,7 @@ def hello():
             sha1 = hashlib.sha1()
             map(sha1.update, tmplist)
             hashcode = sha1.hexdigest()
-            print "handle/GET func: hashcode, signature: ", hashcode, signature
+            #print "handle/GET func: hashcode, signature: ", hashcode, signature
             if hashcode == signature:
                 return echostr
             else:
@@ -32,26 +33,25 @@ def hello():
             return "Hello World!"
     else:
         messageReceive = solve_request(request)
+        #print messageReceive.MsgType 
+        #print  messageReceive.Event 
         if isinstance(messageReceive, TextMsg) and messageReceive.MsgType == 'text':
-                toUser = messageReceive.FromUserName
-                fromUser = messageReceive.ToUserName
-                content = "test"
-                replyMsg = reply.TextReplyMsg(toUser, fromUser, content)
-                return replyMsg.send()
+            toUser = messageReceive.FromUserName
+            fromUser = messageReceive.ToUserName
+            content = resp_content(messageReceive)
+            replyMsg = TextReplyMsg(toUser, fromUser, content)
+            return replyMsg.send()
+        elif isinstance(messageReceive, BaseEvent) and messageReceive.MsgType == 'event' and messageReceive.Event == 'subscribe':
+            toUser = messageReceive.FromUserName
+            fromUser = messageReceive.ToUserName
+            content = "hello this is my gift"
+            replyMsg = TextReplyMsg(toUser, fromUser, content)
+            return replyMsg.send()
+        else:
+            return "success"
             
             
-def solve_request(request):
-        #print request.stream.read()
-        #rawStr = request.stream.read()
-        receiveRequest = request.data
-        if len(receiveRequest) == 0:
-            return None
-        #print rawStr
-        xmlReceive = xmlee.fromstring(receiveRequest)
-        #print xml_rec
-        msg_type = xmlReceive.find('MsgType').text
-        if msg_type == 'text':
-            return TextMsg(xmlReceive)
+
         
         
         
