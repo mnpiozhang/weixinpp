@@ -12,7 +12,7 @@ def resp_content(messageReceive):
     elif messageReceive.Content == "2":
         return getMem()
     elif messageReceive.Content == "3":
-        return w()
+        return getOnlineUser
     else:
         return "hehe"
     
@@ -25,14 +25,14 @@ def getMem():
     resp = "总内存  %s\n可用内存  %s" %(bytes2human(totalMem),bytes2human(availableMem))
     return resp
 
-def w():
-    # TODO user idle time not yet achieve
-    user_idle_time = '0.00s'
+def getOnlineUser():
     ret = []
     for u in psutil.users():
         ret.append([u.name,
                     u.host,
-                    datetime.fromtimestamp(u.started).strftime("%H:%M"),
-                    user_idle_time
+                    datetime.fromtimestamp(u.started).strftime("%Y%m%d/%H:%M"),
                     ])
-    return ret
+    resp = ""
+    for i in  ret:
+        resp = resp + "User:%sFrom:%sTime:%s\n" %(i[0],i[1],i[2])
+    return resp
