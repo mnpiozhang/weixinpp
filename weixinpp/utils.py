@@ -12,7 +12,7 @@ def resp_content(messageReceive):
     elif messageReceive.Content == "2":
         return getMem()
     elif messageReceive.Content == "3":
-        return getOnlineUser
+        return getOnlineUser()
     else:
         return "hehe"
     
