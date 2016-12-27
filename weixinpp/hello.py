@@ -4,8 +4,9 @@ from flask import Flask
 from flask import request
 import hashlib
 from common import solve_request
-from utils import resp_content
+from utils import resp_content,helpStr
 from xmlobjs import TextMsg,TextReplyMsg,BaseEvent
+
 
 
 app = Flask(__name__)
@@ -44,7 +45,7 @@ def hello():
         elif isinstance(messageReceive, BaseEvent) and messageReceive.MsgType == 'event' and messageReceive.Event == 'subscribe':
             toUser = messageReceive.FromUserName
             fromUser = messageReceive.ToUserName
-            content = "hello this is my gift"
+            content = helpStr
             replyMsg = TextReplyMsg(toUser, fromUser, content)
             return replyMsg.send()
         else:

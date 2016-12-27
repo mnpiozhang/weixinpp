@@ -5,6 +5,16 @@ import socket
 from common import bytes2human
 from datetime import  datetime
 
+
+
+helpStr = '''hello this is my toy.
+show memory info input 1
+show user info input 2
+show cpu info input 3
+show hardware info input 4
+show host info input 5
+help input ?'''
+
 #具体处理逻辑
 def resp_content(messageReceive):
     if messageReceive.Content == "1":
@@ -13,6 +23,8 @@ def resp_content(messageReceive):
         return getMem()
     elif messageReceive.Content == "3":
         return getOnlineUser()
+    elif messageReceive.Content == "?":
+        return helpStr
     else:
         return "hehe"
     
@@ -34,5 +46,7 @@ def getOnlineUser():
                     ])
     resp = ""
     for i in  ret:
-        resp = resp + "User:%sFrom:%sTime:%s\n" %(i[0],i[1],i[2])
+        if i[1] == "":
+            i[1] = 'unknown'
+        resp = resp + "User:%s From:%s Time:%s\n" %(i[0],i[1],i[2])
     return resp
