@@ -92,4 +92,4 @@ def getHardware():
 '''
 
 def playplay():
-    pass
+    return "我还没想好...."
