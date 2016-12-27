@@ -4,25 +4,46 @@ import psutil
 import socket
 from common import bytes2human
 from datetime import  datetime
+import platform
+import multiprocessing
 
 
-
+############工具方法or参数###############
 helpStr = '''hello this is my toy.
-show memory info input 1
-show user info input 2
-show cpu info input 3
-show hardware info input 4
-show host info input 5
+show host info input 1
+show memory info input 2
+show user info input 3
+show cpu info input 4
+show hardware info input 5
 help input ?'''
 
+def divide_into_paragraphs(data):
+    parsedlist = []
+    a = ""
+    tmplist = data.splitlines(True)
+    for i in tmplist:
+        if i.strip():
+            a = a + i
+        else:
+            parsedlist.append(a)
+            a=""
+    parsedlist.append(a)
+    return parsedlist
+
+
+########################################################
 #具体处理逻辑
 def resp_content(messageReceive):
     if messageReceive.Content == "1":
-        return socket.gethostname()
+        return "hostname: " + socket.gethostname() +"\nos: " + "-".join(platform.dist())
     elif messageReceive.Content == "2":
         return getMem()
     elif messageReceive.Content == "3":
         return getOnlineUser()
+    elif messageReceive.Content == "4":
+        return getCpu()
+    elif messageReceive.Content == "5":
+        return getHardware()
     elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
         return helpStr
     else:
@@ -50,3 +71,21 @@ def getOnlineUser():
             i[1] = 'unknown'
         resp = resp + "User:%s From:%s Time:%s\n" %(i[0],i[1],i[2])
     return resp
+
+def getCpu():
+    cpuModel =  os.popen("cat /proc/cpuinfo  |grep 'model name' |sort | uniq |awk -F\: '{print $2}' |sed 's/^[ \t]*//g'").read()
+    cpuPhysical = os.popen("cat /proc/cpuinfo  |grep 'physical id'|sort|uniq |wc -l").read()
+    cpuCore = os.popen("cat /proc/cpuinfo  |grep 'core id'|sort |uniq|wc -l").read()
+    cpuProcess = multiprocessing.cpu_count()
+    return "型号:" + cpuModel.strip("\n") +"\n物理个数:" + cpuPhysical.strip("\n")+"\ncore个数:" + cpuCore.strip("\n")+"\n线程个数:" + str(cpuProcess).strip("\n")
+
+
+def getHardware():
+    dmiInfo = os.popen("dmidecode").read()
+    dmi = divide_into_paragraphs(dmiInfo)
+    for i in dmi:
+        if "System Information" in i:
+            sysinfo = i.strip().split("\n")
+            hostinfodic = dict([a.strip().split(": ") for a in sysinfo if ":" in a])
+    #print hostinfo
+    return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
