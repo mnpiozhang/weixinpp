@@ -10,12 +10,12 @@ import os
 
 ############工具方法or参数###############
 helpStr = '''hello this is my toy.
-show host info input 1
-show memory info input 2
-show user info input 3
-show cpu info input 4
-show hardware info input 5
-help input ?'''
+host info input 1
+memory info input 2
+user info input 3
+cpu info input 4
+playplay input 5
+help info input ? or help'''
 
 def divide_into_paragraphs(data):
     parsedlist = []
@@ -43,7 +43,7 @@ def resp_content(messageReceive):
     elif messageReceive.Content == "4":
         return getCpu()
     elif messageReceive.Content == "5":
-        return getHardware()
+        return playplay()
     elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
         return helpStr
     else:
@@ -79,7 +79,7 @@ def getCpu():
     cpuProcess = multiprocessing.cpu_count()
     return "型号:" + cpuModel.strip("\n") +"\n物理个数:" + cpuPhysical.strip("\n")+"\ncore个数:" + cpuCore.strip("\n")+"\n线程个数:" + str(cpuProcess).strip("\n")
 
-
+'''
 def getHardware():
     dmiInfo = os.popen("dmidecode").read()
     dmi = divide_into_paragraphs(dmiInfo)
@@ -89,3 +89,7 @@ def getHardware():
             hostinfodic = dict([a.strip().split(": ") for a in sysinfo if ":" in a])
     #print hostinfo
     return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
+'''
+
+def playplay():
+    pass
