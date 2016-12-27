@@ -6,7 +6,7 @@ from common import bytes2human
 from datetime import  datetime
 import platform
 import multiprocessing
-
+import os
 
 ############工具方法or参数###############
 helpStr = '''hello this is my toy.
