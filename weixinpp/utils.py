@@ -23,7 +23,7 @@ def resp_content(messageReceive):
         return getMem()
     elif messageReceive.Content == "3":
         return getOnlineUser()
-    elif messageReceive.Content == "?":
+    elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
         return helpStr
     else:
         return "hehe"
