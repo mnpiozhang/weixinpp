@@ -113,7 +113,9 @@ def startPlay(messageReceive,userkey,r):
     return '''开始游戏，请选择
     1.get a weapon
     2.go to hit dog
-    HP:{hp} 钱:{money} 分数:{score}'''.format(**attr_dict)
+    HP:{hp}
+    money:{money}
+    score:{score}'''.format(**attr_dict).lstrip()
     #return "我还没想好...."
 
 @is_hp_empty
@@ -124,10 +126,14 @@ def goOnGames(messageReceive,userkey,r):
         userInfo["money"] = int(userInfo["money"]) -100
         r.hmset(userkey, userInfo)
         return '''you buy a weapon,go on
-        HP:{hp} 钱:{money} 分数:{score}'''.format(**userInfo)
+        HP:{hp}
+        money:{money}
+        score:{score}'''.format(**userInfo).lstrip()
     elif messageReceive.Content == "2":
         userInfo["hp"] = int(userInfo["hp"]) -1
         r.hmset(userkey, userInfo)
         return '''you hit a dog,go on
-        HP:{hp} 钱:{money} 分数:{score}'''.format(**userInfo)
+        HP:{hp}
+        money:{money}
+        score:{score}'''.format(**userInfo).lstrip()
         
