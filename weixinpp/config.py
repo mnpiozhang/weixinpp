@@ -4,6 +4,13 @@
 REDIS_SERVER="127.0.0.1"
 REDIS_PORT=6379
 
+INIT_STATE={ 
+            "money":1000,
+            "score":0,
+            "process":0,
+            "hp":10,
+            }
+
 HELP_STR = '''hello this is my toy.
 host info input 1
 memory info input 2
@@ -13,8 +20,8 @@ playplay game input 5
 help info input ? or help'''
 
 START_GAME='''开始游戏，请选择
-1.get a weapon
-2.go to hit dog
+1.买装备
+2.去打狗
 HP:{hp}
 money:{money}
 score:{score}'''

@@ -97,12 +97,7 @@ def getHardware():
 ##############################
 #游戏处理逻辑
 def startPlay(messageReceive,userkey,r):
-    attr_dict = { 
-                 "money":1000,
-                 "score":0,
-                 "process":0,
-                 "hp":10,
-                 }
+    attr_dict = cf.INIT_STATE
     r.hmset(userkey, attr_dict)  
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
