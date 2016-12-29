@@ -6,7 +6,7 @@ from functools import wraps
 def is_hp_empty(view_func):
     @wraps(view_func)
     def wrapper(messageReceive,userkey,r):
-        if  r.hgetall(userkey)['hp'] <= 0:
+        if  int(r.hgetall(userkey)['hp']) <= 0:
             r.delete(userkey)
             return "you are dead"
         else:
