@@ -117,11 +117,12 @@ def startPlay(messageReceive,userkey,r):
 def goOnGames(messageReceive,userkey,r):
     userInfo = r.hgetall(userkey)  
     if messageReceive.Content == "1":
-        userInfo["money"] = userInfo["money"] -100
+        #redis里面取出来的字典的值都变为str了
+        userInfo["money"] = int(userInfo["money"]) -100
         r.hmset(userkey, userInfo)
         return "you buy a weapon,go on"
     elif messageReceive.Content == "2":
-        userInfo["hp"] = userInfo["hp"] -1
+        userInfo["hp"] = int(userInfo["hp"]) -1
         r.hmset(userkey, userInfo)
         return "you hit a dog,go on"
         
