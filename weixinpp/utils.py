@@ -7,7 +7,7 @@ import platform
 import socket
 import hashlib
 import psutil
-
+from decorators import is_hp_empty
 from common import bytes2human, redisConnect
 
 
@@ -37,20 +37,25 @@ def divide_into_paragraphs(data):
 ########################################################
 #具体处理逻辑
 def resp_content(messageReceive):
-    if messageReceive.Content == "1":
-        return "hostname: " + socket.gethostname() +"\nos: " + "-".join(platform.dist())
-    elif messageReceive.Content == "2":
-        return getMem()
-    elif messageReceive.Content == "3":
-        return getOnlineUser()
-    elif messageReceive.Content == "4":
-        return getCpu()
-    elif messageReceive.Content == "5":
-        return playplay(messageReceive)
-    elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
-        return helpStr
+    r = redisConnect()
+    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
+    if r.exists(userkey):
+        return goOnGames(messageReceive,userkey,r) 
     else:
-        return "hehe"
+        if messageReceive.Content == "1":
+            return "hostname: " + socket.gethostname() +"\nos: " + "-".join(platform.dist())
+        elif messageReceive.Content == "2":
+            return getMem()
+        elif messageReceive.Content == "3":
+            return getOnlineUser()
+        elif messageReceive.Content == "4":
+            return getCpu()
+        elif messageReceive.Content == "5":
+            return startPlay(messageReceive,userkey,r)
+        elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
+            return helpStr
+        else:
+            return "hehe"
     
 
 
@@ -94,11 +99,29 @@ def getHardware():
     return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
 '''
 
-def playplay(messageReceive):
-    r = redisConnect()
-    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
-    if r.exists(userkey):
-        return "go on"
-    else:
-        return "start"
+def startPlay(messageReceive,userkey,r):
+    attr_dict = { 
+                 "money":1000,
+                 "score":0,
+                 "process":0,
+                 "hp":10,
+                 }
+    r.hmset(userkey, attr_dict)  
+    return '''start games.please chose
+    1.get a weapon
+    2.go to hit dog
+    '''
     #return "我还没想好...."
+
+@is_hp_empty
+def goOnGames(messageReceive,userkey,r):
+    userInfo = r.hgetall(userkey)  
+    if messageReceive.Content == "1":
+        userInfo["money"] = userInfo["money"] -100
+        r.hmset(userkey, userInfo)
+        return "you buy a weapon,go on"
+    elif messageReceive.Content == "2":
+        userInfo["hp"] = userInfo["hp"] -1
+        r.hmset(userkey, userInfo)
+        return "you hit a dog,go on"
+        
