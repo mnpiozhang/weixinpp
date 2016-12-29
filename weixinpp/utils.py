@@ -58,7 +58,8 @@ def resp_content(messageReceive):
             return "hehe"
     
 
-
+####################################################
+#服务器基本信息
 def getMem():
     memInfo = psutil.virtual_memory()
     totalMem = memInfo.total
@@ -99,6 +100,8 @@ def getHardware():
     return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
 '''
 
+##############################
+#游戏处理逻辑
 def startPlay(messageReceive,userkey,r):
     attr_dict = { 
                  "money":1000,
@@ -107,10 +110,10 @@ def startPlay(messageReceive,userkey,r):
                  "hp":10,
                  }
     r.hmset(userkey, attr_dict)  
-    return '''start games.please chose
+    return '''开始游戏，请选择
     1.get a weapon
     2.go to hit dog
-    '''
+    HP:{hp} 钱:{money} 分数:{score}'''.format(**attr_dict)
     #return "我还没想好...."
 
 @is_hp_empty
@@ -120,9 +123,11 @@ def goOnGames(messageReceive,userkey,r):
         #redis里面取出来的字典的值都变为str了
         userInfo["money"] = int(userInfo["money"]) -100
         r.hmset(userkey, userInfo)
-        return "you buy a weapon,go on"
+        return '''you buy a weapon,go on
+        HP:{hp} 钱:{money} 分数:{score}'''.format(**userInfo)
     elif messageReceive.Content == "2":
         userInfo["hp"] = int(userInfo["hp"]) -1
         r.hmset(userkey, userInfo)
-        return "you hit a dog,go on"
+        return '''you hit a dog,go on
+        HP:{hp} 钱:{money} 分数:{score}'''.format(**userInfo)
         
