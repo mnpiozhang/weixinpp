@@ -6,9 +6,10 @@ from flask import Flask
 from flask import request
 
 from common import solve_request
-from utils import resp_content, helpStr
+from utils import resp_content
 from xmlobjs import TextMsg, TextReplyMsg, BaseEvent
 
+import config as cf
 
 app = Flask(__name__)
 
@@ -46,7 +47,7 @@ def hello():
         elif isinstance(messageReceive, BaseEvent) and messageReceive.MsgType == 'event' and messageReceive.Event == 'subscribe':
             toUser = messageReceive.FromUserName
             fromUser = messageReceive.ToUserName
-            content = helpStr
+            content = cf.HELP_STR
             replyMsg = TextReplyMsg(toUser, fromUser, content)
             return replyMsg.send()
         else:
