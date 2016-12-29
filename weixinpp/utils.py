@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 #_*_ coding:utf-8 _*_
-import psutil
-import socket
-from common import bytes2human
 from datetime import  datetime
-import platform
 import multiprocessing
 import os
+import platform
+import socket
+import hashlib
+import psutil
+
+from common import bytes2human, redisConnect
+
 
 ############工具方法or参数###############
 helpStr = '''hello this is my toy.
@@ -14,7 +17,7 @@ host info input 1
 memory info input 2
 user info input 3
 cpu info input 4
-playplay input 5
+playplay game input 5
 help info input ? or help'''
 
 def divide_into_paragraphs(data):
@@ -43,7 +46,7 @@ def resp_content(messageReceive):
     elif messageReceive.Content == "4":
         return getCpu()
     elif messageReceive.Content == "5":
-        return playplay()
+        return playplay(messageReceive)
     elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
         return helpStr
     else:
@@ -91,5 +94,11 @@ def getHardware():
     return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
 '''
 
-def playplay():
-    return "我还没想好...."
+def playplay(messageReceive):
+    r = redisConnect()
+    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
+    if r.exists(userkey):
+        return "go on"
+    else:
+        return "start"
+    #return "我还没想好...."

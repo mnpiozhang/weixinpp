@@ -2,7 +2,8 @@
 #_*_ coding:utf-8 _*_
 import  xml.etree.ElementTree as xmlee
 from xmlobjs import TextMsg,BaseEvent
-
+from redispool import pool
+import redis
 
 #接受并解析xml信息
 def solve_request(request):
@@ -42,3 +43,7 @@ def bytes2human(n, format='%(value).1f %(symbol)s', symbols='customary'):
             value = float(n) / prefix[symbol]
             return format % locals()
     return format % dict(symbol=symbols[0], value=n)
+
+def redisConnect():
+    r = redis.Redis(connection_pool=pool)
+    return r

@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 #_*_ coding:utf-8 _*_
+import hashlib
+
 from flask import Flask
 from flask import request
-import hashlib
-from common import solve_request
-from utils import resp_content,helpStr
-from xmlobjs import TextMsg,TextReplyMsg,BaseEvent
 
+from common import solve_request
+from utils import resp_content, helpStr
+from xmlobjs import TextMsg, TextReplyMsg, BaseEvent
 
 
 app = Flask(__name__)
