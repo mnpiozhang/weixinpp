@@ -9,16 +9,10 @@ import hashlib
 import psutil
 from decorators import is_hp_empty
 from common import bytes2human, redisConnect
-
+import config as cf
 
 ############工具方法or参数###############
-helpStr = '''hello this is my toy.
-host info input 1
-memory info input 2
-user info input 3
-cpu info input 4
-playplay game input 5
-help info input ? or help'''
+
 
 def divide_into_paragraphs(data):
     parsedlist = []
@@ -53,7 +47,7 @@ def resp_content(messageReceive):
         elif messageReceive.Content == "5":
             return startPlay(messageReceive,userkey,r)
         elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
-            return helpStr
+            return cf.HELP_STR
         else:
             return "hehe"
     
@@ -110,12 +104,7 @@ def startPlay(messageReceive,userkey,r):
                  "hp":10,
                  }
     r.hmset(userkey, attr_dict)  
-    return '''开始游戏，请选择
-    1.get a weapon
-    2.go to hit dog
-    HP:{hp}
-    money:{money}
-    score:{score}'''.format(**attr_dict).lstrip()
+    return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
 
 @is_hp_empty
@@ -125,15 +114,9 @@ def goOnGames(messageReceive,userkey,r):
         #redis里面取出来的字典的值都变为str了
         userInfo["money"] = int(userInfo["money"]) -100
         r.hmset(userkey, userInfo)
-        return '''you buy a weapon,go on
-        HP:{hp}
-        money:{money}
-        score:{score}'''.format(**userInfo).lstrip()
+        return cf.BUY_WEAPON.format(**userInfo)
     elif messageReceive.Content == "2":
         userInfo["hp"] = int(userInfo["hp"]) -1
         r.hmset(userkey, userInfo)
-        return '''you hit a dog,go on
-        HP:{hp}
-        money:{money}
-        score:{score}'''.format(**userInfo).lstrip()
+        return cf.HIT_DOG.format(**userInfo)
         
