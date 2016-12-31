@@ -21,7 +21,8 @@ def solve_request(request):
         elif msg_type == 'event':
             return BaseEvent(xmlReceive)
         
-#抄来的http://code.activestate.com/recipes/578019/        
+#抄来的http://code.activestate.com/recipes/578019/    
+#本来用于转换服务器内存等单位用的，现在用不到了    
 def bytes2human(n, format='%(value).1f %(symbol)s', symbols='customary'):
     SYMBOLS = {
         'customary'     : ('B', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'),

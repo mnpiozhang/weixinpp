@@ -43,6 +43,7 @@ def resp_content(messageReceive):
         else:
             return "hehe,please input 1 or ?"
 '''
+#######################本来是想搞搞服务器信息查询的 还是算了，专门写个游戏玩玩
 def resp_content(messageReceive):
     r = redisConnect()
     userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
@@ -65,7 +66,7 @@ def resp_content(messageReceive):
             return "hehe"
 '''    
 '''
-####################################################本来是想搞搞服务器信息查询的 还是算了
+
 #服务器基本信息 
 def getMem():
     memInfo = psutil.virtual_memory()
@@ -126,10 +127,12 @@ def goOnGames(messageReceive,userkey,r):
             userInfo["money"] = int(userInfo["money"]) -100
             userInfo["hp_now"] = int(userInfo["hp_limit"])
             r.hmset(userkey, userInfo)
-            return cf.BUY_WEAPON.format(**userInfo)
+            return cf.STAY_HOTEL.format(**userInfo)
+        #选择2 去打狗
         elif messageReceive.Content == "2":
-            userInfo["hp"] = int(userInfo["hp"]) -1
+            userInfo["hp_now"] = int(userInfo["hp_now"]) -1
             r.hmset(userkey, userInfo)
             return cf.HIT_DOG.format(**userInfo)
+        #选择3 看状态
         elif messageReceive.Content == "3":
             return cf.ROLE_STATE.format(**userInfo)
