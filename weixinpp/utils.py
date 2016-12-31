@@ -134,7 +134,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
                 userInfo["money"] = int(userInfo["money"]) -100
                 userInfo["hp_now"] = int(userInfo["hp_limit"])
                 r.hmset(userkey, userInfo)
-                return cf.STAY_HOTEL.format(**userInfo)
+                return cf.NOMONEY_STAY_HOTEL.format(**userInfo)
             else:
                 return cf.STAY_HOTEL.format(**userInfo)
         #选择2 去打狗
