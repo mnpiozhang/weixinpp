@@ -131,7 +131,7 @@ def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
 @is_hp_empty
 def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     userInfo = r.hgetall(userkey)
-    inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,intern)
+    inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,score_cast_func=intern)
     #marketInfo = r.
     #流程为0在新手村
     if userInfo["process"] == "0":
