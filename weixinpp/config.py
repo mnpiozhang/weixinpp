@@ -19,7 +19,11 @@ start game input 1
 if you need help，
 input ? or help'''
 
-HELP_STR = '''这是一款文字冒险游戏
+HELP_STR = '''这是一款文字类的冒险游戏<<打狗传>>
+是我闲的蛋疼基于微信公众号后端开发的
+游戏流程通过选择去打狗来开展
+主人公HP小于等于0时，游戏结束
+游戏过程中可以选择c来查看状态
 '''
 
 DEAD_STR = '''you are dead
