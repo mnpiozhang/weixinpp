@@ -15,5 +15,5 @@ def is_hp_empty(view_func):
             pipeline.execute()
             return cf.DEAD_STR
         else:
-            return view_func(messageReceive,userkey,r)
+            return view_func(messageReceive,userkey,inventorykey,marketkey,r)
     return wrapper
