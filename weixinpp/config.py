@@ -10,6 +10,7 @@ INIT_STATE={
             "money":1000,
             "score":0,
             "process":0,
+            "place":0,
             "hp_now":10,
             "hp_limit":10,
             }

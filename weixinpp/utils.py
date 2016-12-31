@@ -152,8 +152,8 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,score_cast_func=intern)
     marketInfo = r.zrange(marketkey,0,-1,withscores=True,score_cast_func=intern)
     #marketInfo = r.
-    #流程为0在新手村
-    if userInfo["process"] == "0":
+    #地点为0在新手村
+    if userInfo["place"] == "0":
         #选择1 进客栈
         if messageReceive.Content == "1":
             #redis里面取出来的字典的值都变为str了
@@ -166,7 +166,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
                 return cf.NOMONEY_STAY_HOTEL.format(**userInfo)
         #选择2 去商店--初始化的时候
         elif messageReceive.Content == "2":
-            userInfo["process"] = 1
+            userInfo["place"] = 1
             r.hmset(userkey, userInfo)
             return cf.SHOP_BEGIN
         elif messageReceive.Content == "3":
@@ -180,8 +180,8 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},**userInfo))
         else:
             return "hehe,请做一个选择"
-    #流程1 在商店
-    elif userInfo["process"] == "1":
+    #地点1 在商店
+    elif userInfo["place"] == "1":
         #选择木剑 价格200
         if messageReceive.Content == "1":
             return buySomething("木剑",200,userkey,inventorykey,userInfo,r)
@@ -189,7 +189,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
         elif messageReceive.Content == "2":
             return buySomething("铁剑",500,userkey,inventorykey,userInfo,r)
         elif messageReceive.Content == "0":
-            userInfo["process"] = 0
+            userInfo["place"] = 0
             r.hmset(userkey, userInfo)
             return cf.OUT_SHOP
         elif messageReceive.Content == "c":
