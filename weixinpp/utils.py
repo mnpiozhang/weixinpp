@@ -147,7 +147,8 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
         elif messageReceive.Content == "3":
             #state_dic = userInfo + {"items":" ".join(inventoryInfo)}
             #将两个字典合并起来
-            return cf.ROLE_STATE.format(dict({"items":" ".join(inventoryInfo)},**userInfo))
+            #state_dic = dict({"items":" ".join(inventoryInfo)},**userInfo)
+            return cf.ROLE_STATE.format(**dict({"items":" ".join(inventoryInfo)},**userInfo))
         
         
         
