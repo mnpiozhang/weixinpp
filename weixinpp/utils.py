@@ -145,8 +145,8 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             return cf.HIT_DOG.format(**userInfo)
         #选择3 看状态
         elif messageReceive.Content == "3":
-            state_dic = userInfo + {"items":" ".join(inventoryInfo)}
-            return cf.ROLE_STATE.format(**state_dic)
+            #state_dic = userInfo + {"items":" ".join(inventoryInfo)}
+            return cf.ROLE_STATE.format({"items":" ".join(inventoryInfo)},**userInfo)
         
         
         
