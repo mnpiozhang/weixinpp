@@ -140,7 +140,7 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
     if  int(userInfo["money"]) - price >= 0:
         pipeline = r.pipeline()
         pipeline.hincrby(userkey,"money",-price)
-        pipeline.zadd(inventorykey,itemname,1)
+        pipeline.zincrby(inventorykey,itemname,1)
         pipeline.execute()
         return cf.SHOP_BEGIN_BUYOK.format(**r.hgetall(userkey))
     else:
