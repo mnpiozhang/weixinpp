@@ -136,9 +136,12 @@ def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
 
-def buySomething(price,userkey,userInfo,r):
+def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
     if  int(userInfo["money"]) - price >= 0:
-        r.hincrby(userkey,"money",-price)
+        pipeline = r.pipeline()
+        pipeline.hincrby(userkey,"money",-price)
+        pipeline.zadd(inventorykey,itemname,1)
+        pipeline.execute()
         return cf.SHOP_BEGIN_BUYOK.format(**userInfo)
     else:
         return cf.SHOP_BEGIN_NOMONEY
@@ -181,10 +184,10 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     elif userInfo["process"] == "1":
         #选择木剑 价格200
         if messageReceive.Content == "1":
-            return buySomething(200,userkey,userInfo,r)
+            return buySomething("木剑",200,userkey,inventorykey,userInfo,r)
         #选择铁剑 价格500
         elif messageReceive.Content == "2":
-            return buySomething(500,userkey,userInfo,r)
+            return buySomething("铁剑",500,userkey,inventorykey,userInfo,r)
         elif messageReceive.Content == "0":
             userInfo["process"] = 0
             r.hmset(userkey, userInfo)
