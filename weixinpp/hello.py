@@ -47,7 +47,7 @@ def hello():
         elif isinstance(messageReceive, BaseEvent) and messageReceive.MsgType == 'event' and messageReceive.Event == 'subscribe':
             toUser = messageReceive.FromUserName
             fromUser = messageReceive.ToUserName
-            content = cf.HELP_STR
+            content = cf.START_STR
             replyMsg = TextReplyMsg(toUser, fromUser, content)
             return replyMsg.send()
         else:

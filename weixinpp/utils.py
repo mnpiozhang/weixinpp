@@ -37,6 +37,19 @@ def resp_content(messageReceive):
         return goOnGames(messageReceive,userkey,r) 
     else:
         if messageReceive.Content == "1":
+            return startPlay(messageReceive,userkey,r)
+        elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
+            return cf.HELP_STR
+        else:
+            return "hehe,please input 1 or ?"
+'''
+def resp_content(messageReceive):
+    r = redisConnect()
+    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
+    if r.exists(userkey):
+        return goOnGames(messageReceive,userkey,r) 
+    else:
+        if messageReceive.Content == "1":
             return "hostname: " + socket.gethostname() +"\nos: " + "-".join(platform.dist())
         elif messageReceive.Content == "2":
             return getMem()
@@ -50,10 +63,10 @@ def resp_content(messageReceive):
             return cf.HELP_STR
         else:
             return "hehe"
-    
-
-####################################################
-#服务器基本信息
+'''    
+'''
+####################################################本来是想搞搞服务器信息查询的 还是算了
+#服务器基本信息 
 def getMem():
     memInfo = psutil.virtual_memory()
     totalMem = memInfo.total
@@ -81,7 +94,7 @@ def getCpu():
     cpuCore = os.popen("cat /proc/cpuinfo  |grep 'core id'|sort |uniq|wc -l").read()
     cpuProcess = multiprocessing.cpu_count()
     return "型号:" + cpuModel.strip("\n") +"\n物理个数:" + cpuPhysical.strip("\n")+"\ncore个数:" + cpuCore.strip("\n")+"\n线程个数:" + str(cpuProcess).strip("\n")
-
+'''
 '''
 def getHardware():
     dmiInfo = os.popen("dmidecode").read()
@@ -104,14 +117,19 @@ def startPlay(messageReceive,userkey,r):
 
 @is_hp_empty
 def goOnGames(messageReceive,userkey,r):
-    userInfo = r.hgetall(userkey)  
-    if messageReceive.Content == "1":
-        #redis里面取出来的字典的值都变为str了
-        userInfo["money"] = int(userInfo["money"]) -100
-        r.hmset(userkey, userInfo)
-        return cf.BUY_WEAPON.format(**userInfo)
-    elif messageReceive.Content == "2":
-        userInfo["hp"] = int(userInfo["hp"]) -1
-        r.hmset(userkey, userInfo)
-        return cf.HIT_DOG.format(**userInfo)
-        
+    userInfo = r.hgetall(userkey)
+    #流程为0在新手村
+    if userInfo["process"] == "0":
+        #选择1 进客栈
+        if messageReceive.Content == "1":
+            #redis里面取出来的字典的值都变为str了
+            userInfo["money"] = int(userInfo["money"]) -100
+            userInfo["hp_now"] = int(userInfo["hp_limit"])
+            r.hmset(userkey, userInfo)
+            return cf.BUY_WEAPON.format(**userInfo)
+        elif messageReceive.Content == "2":
+            userInfo["hp"] = int(userInfo["hp"]) -1
+            r.hmset(userkey, userInfo)
+            return cf.HIT_DOG.format(**userInfo)
+        elif messageReceive.Content == "3":
+            return cf.ROLE_STATE.format(**userInfo)
