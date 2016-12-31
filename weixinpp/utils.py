@@ -13,6 +13,13 @@ import config as cf
 
 ############工具方法or参数###############
 
+#ex[('a',1),('b',2)] ==> aX1 bX2
+def itemslist_to_str(inventoryInfo):
+    itemsOut=""
+    for k,v in inventoryInfo:
+        strOut = k + 'X' + str(v)
+        itemsOut = itemsOut + " " + strOut
+    return itemsOut
 
 def divide_into_paragraphs(data):
     parsedlist = []
@@ -115,7 +122,8 @@ def getHardware():
 def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
     attr_dict = cf.INIT_STATE
     r.hmset(userkey, attr_dict)
-    r.sadd(inventorykey,"绝世神功")
+    #r.sadd(inventorykey,"绝世神功")
+    r.zadd(inventorykey,"绝世神功",1)
     r.zadd(marketkey,"木剑",200,"铁剑",500)
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
@@ -123,7 +131,7 @@ def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
 @is_hp_empty
 def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     userInfo = r.hgetall(userkey)
-    inventoryInfo = r.smembers(inventorykey)
+    inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,intern)
     #marketInfo = r.
     #流程为0在新手村
     if userInfo["process"] == "0":
@@ -145,10 +153,8 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             return cf.HIT_DOG.format(**userInfo)
         #选择3 看状态
         elif messageReceive.Content == "3":
-            #state_dic = userInfo + {"items":" ".join(inventoryInfo)}
             #将两个字典合并起来
-            #state_dic = dict({"items":" ".join(inventoryInfo)},**userInfo)
-            return cf.ROLE_STATE.format(**dict({"items":" ".join(inventoryInfo)},**userInfo))
+            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},**userInfo))
         
         
         
