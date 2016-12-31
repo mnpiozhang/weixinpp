@@ -7,7 +7,7 @@ import config as cf
 def is_hp_empty(view_func):
     @wraps(view_func)
     def wrapper(messageReceive,userkey,r):
-        if  int(r.hgetall(userkey)['hp']) <= 0:
+        if  int(r.hgetall(userkey)['hp_now']) <= 0:
             r.delete(userkey)
             return cf.DEAD_STR
         else:
