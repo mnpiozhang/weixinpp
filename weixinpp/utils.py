@@ -32,12 +32,14 @@ def divide_into_paragraphs(data):
 #具体处理逻辑
 def resp_content(messageReceive):
     r = redisConnect()
-    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
+    userkey = "users:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
+    inventorykey = "inventory:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
+    marketkey = "marketkey:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
     if r.exists(userkey):
         return goOnGames(messageReceive,userkey,r) 
     else:
         if messageReceive.Content == "1":
-            return startPlay(messageReceive,userkey,r)
+            return startPlay(messageReceive,userkey,inventorykey,marketkey,r)
         elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
             return cf.HELP_STR
         else:
@@ -110,29 +112,42 @@ def getHardware():
 
 ##############################
 #游戏处理逻辑
-def startPlay(messageReceive,userkey,r):
+def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
     attr_dict = cf.INIT_STATE
-    r.hmset(userkey, attr_dict)  
+    r.hmset(userkey, attr_dict)
+    r.sadd(inventorykey,"绝世神功")
+    r.zadd(marketkey,"木剑",200,"铁剑",500)
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
 
 @is_hp_empty
-def goOnGames(messageReceive,userkey,r):
+def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     userInfo = r.hgetall(userkey)
+    inventoryInfo = r.smembers(inventorykey)
+    #marketInfo = r.
     #流程为0在新手村
     if userInfo["process"] == "0":
         #选择1 进客栈
         if messageReceive.Content == "1":
             #redis里面取出来的字典的值都变为str了
-            userInfo["money"] = int(userInfo["money"]) -100
-            userInfo["hp_now"] = int(userInfo["hp_limit"])
-            r.hmset(userkey, userInfo)
-            return cf.STAY_HOTEL.format(**userInfo)
+            if int(userInfo["money"]) -100 >= 0:
+                userInfo["money"] = int(userInfo["money"]) -100
+                userInfo["hp_now"] = int(userInfo["hp_limit"])
+                r.hmset(userkey, userInfo)
+                return cf.STAY_HOTEL.format(**userInfo)
+            else:
+                return cf.STAY_HOTEL.format(**userInfo)
         #选择2 去打狗
         elif messageReceive.Content == "2":
-            userInfo["hp_now"] = int(userInfo["hp_now"]) -1
-            r.hmset(userkey, userInfo)
+            #userInfo["hp_now"] = int(userInfo["hp_now"]) -1
+            #r.hmset(userkey, userInfo)
+            r.hincrby(userkey,"hp_now",-1)
             return cf.HIT_DOG.format(**userInfo)
         #选择3 看状态
         elif messageReceive.Content == "3":
-            return cf.ROLE_STATE.format(**userInfo)
+            state_dic = userInfo + {"items":" ".join(inventoryInfo)}
+            return cf.ROLE_STATE.format(**state_dic)
+        
+        
+        
+        #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)

@@ -6,9 +6,13 @@ import config as cf
 #decorators 
 def is_hp_empty(view_func):
     @wraps(view_func)
-    def wrapper(messageReceive,userkey,r):
+    def wrapper(messageReceive,userkey,inventorykey,marketkey,r):
         if  int(r.hgetall(userkey)['hp_now']) <= 0:
-            r.delete(userkey)
+            pipeline = r.pipeline()
+            pipeline.delete(userkey)
+            pipeline.delete(inventorykey)
+            pipeline.delete(marketkey)
+            pipeline.execute()
             return cf.DEAD_STR
         else:
             return view_func(messageReceive,userkey,r)

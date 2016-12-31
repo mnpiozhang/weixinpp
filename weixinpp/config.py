@@ -38,6 +38,7 @@ START_GAME='''开始游戏了，你扮演的是初出茅庐的少侠胡二虎。
 ROLE_STATE='''你是少侠胡二虎
 HP:{hp_now}/{hp_limit}
 money:{money}
+道具:{items}
 '''
 
 STAY_HOTEL='''你在客栈花了100块睡了一晚，觉的很舒服。
@@ -46,14 +47,15 @@ STAY_HOTEL='''你在客栈花了100块睡了一晚，觉的很舒服。
 2.去打狗
 3.查看状态'''
 
-
+NOMONEY_STAY_HOTEL='''你想在客栈睡一晚，但是没有足够的钱。
+你被客栈赶了出来，现在你的选择：
+1.再去客栈休息一晚
+2.去打狗
+3.查看状态'''
 
 BUY_WEAPON='''you buy a weapon,go on
 HP:{hp}
 money:{money}
 score:{score}'''
 
-HIT_DOG='''you hit a dog,go on
-HP:{hp}
-money:{money}
-score:{score}'''
+HIT_DOG='''you hit a dog,go on'''
