@@ -139,7 +139,7 @@ def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
 def buySomething(price,userkey,userInfo,r):
     if  int(userInfo["money"]) - price >= 0:
         r.hincrby(userkey,"money",-price)
-        return cf.SHOP_BEGIN_BUYOK(**userInfo)
+        return cf.SHOP_BEGIN_BUYOK.format(**userInfo)
     else:
         return cf.SHOP_BEGIN_NOMONEY
 
@@ -189,6 +189,9 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             userInfo["process"] = 0
             r.hmset(userkey, userInfo)
             return cf.OUT_SHOP
+        elif messageReceive.Content == "c":
+            #将两个字典合并起来
+            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},**userInfo))
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
