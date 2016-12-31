@@ -36,7 +36,7 @@ def resp_content(messageReceive):
     inventorykey = "inventory:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
     marketkey = "marketkey:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
     if r.exists(userkey):
-        return goOnGames(messageReceive,userkey,r) 
+        return goOnGames(messageReceive,userkey,inventorykey,marketkey,r) 
     else:
         if messageReceive.Content == "1":
             return startPlay(messageReceive,userkey,inventorykey,marketkey,r)
