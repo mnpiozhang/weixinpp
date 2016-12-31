@@ -21,6 +21,7 @@ def itemslist_to_str(inventoryInfo):
         itemsOut = itemsOut + " " + strOut
     return itemsOut
 
+    
 def divide_into_paragraphs(data):
     parsedlist = []
     a = ""
@@ -120,6 +121,13 @@ def getHardware():
 ##############################
 #游戏处理逻辑
 def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
+    '''
+    messageReceive-------接收到的微信xml信息
+    userkey--------------用户信息key
+    inventorykey---------包裹信息key
+    marketkey------------能买道具信息key
+    r--------------------Redis链接对象
+    '''
     attr_dict = cf.INIT_STATE
     r.hmset(userkey, attr_dict)
     #r.sadd(inventorykey,"绝世神功")
@@ -128,10 +136,18 @@ def startPlay(messageReceive,userkey,inventorykey,marketkey,r):
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
 
+def buySomething(price,userkey,userInfo,r):
+    if  int(userInfo["money"]) - price >= 0:
+        r.hincrby(userkey,"money",-price)
+        return cf.SHOP_BEGIN_BUYOK(**userInfo)
+    else:
+        return cf.SHOP_BEGIN_NOMONEY
+
 @is_hp_empty
 def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     userInfo = r.hgetall(userkey)
     inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,score_cast_func=intern)
+    marketInfo = r.zrange(marketkey,0,-1,withscores=True,score_cast_func=intern)
     #marketInfo = r.
     #流程为0在新手村
     if userInfo["process"] == "0":
@@ -145,17 +161,34 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
                 return cf.STAY_HOTEL.format(**userInfo)
             else:
                 return cf.NOMONEY_STAY_HOTEL.format(**userInfo)
-        #选择2 去打狗
+        #选择2 去商店--初始化的时候
         elif messageReceive.Content == "2":
+            userInfo["process"] = 1
+            r.hmset(userkey, userInfo)
+            return cf.SHOP_BEGIN
+        elif messageReceive.Content == "3":
             #userInfo["hp_now"] = int(userInfo["hp_now"]) -1
             #r.hmset(userkey, userInfo)
             r.hincrby(userkey,"hp_now",-1)
             return cf.HIT_DOG.format(**userInfo)
-        #选择3 看状态
-        elif messageReceive.Content == "3":
+        #选择c 看状态
+        elif messageReceive.Content == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},**userInfo))
-        
-        
-        
+        else:
+            return "hehe,请做一个选择"
+    #流程1 在商店
+    elif userInfo["process"] == "1":
+        #选择木剑 价格200
+        if messageReceive.Content == "1":
+            return buySomething(200,userkey,userInfo,r)
+        #选择铁剑 价格500
+        elif messageReceive.Content == "2":
+            return buySomething(500,userkey,userInfo,r)
+        elif messageReceive.Content == "0":
+            userInfo["process"] = 0
+            r.hmset(userkey, userInfo)
+            return cf.OUT_SHOP
+        else:
+            return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
