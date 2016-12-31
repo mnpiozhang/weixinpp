@@ -142,7 +142,7 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
         pipeline.hincrby(userkey,"money",-price)
         pipeline.zadd(inventorykey,itemname,1)
         pipeline.execute()
-        return cf.SHOP_BEGIN_BUYOK.format(**userInfo)
+        return cf.SHOP_BEGIN_BUYOK.format(**r.hgetall(userkey))
     else:
         return cf.SHOP_BEGIN_NOMONEY
 
