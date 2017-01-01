@@ -210,7 +210,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     elif userInfo["place"] == "2":
         #选择1确认信息，能进入以下逻辑说明HP大于0,然后地点改为0
         if messageReceive.Content == "1":
-            r.hset(userkey,"where",0)
+            r.hset(userkey,"place",0)
             return cf.COMEBACK_BEGIN
         else:
             return "hehe,请做一个选择"
