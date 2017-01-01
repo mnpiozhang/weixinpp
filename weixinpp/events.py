@@ -12,7 +12,7 @@ class RandomEvent:
         
 class SmallDogHit(RandomEvent):
     def work(self):
-        reduce_hp = random.randint(1, 3)
+        reduce_hp = random.randint(1, 2)
         add_money = random.randint(20, 50)
         available_items = ["狗肉","骨头"]
         add_items = random.choice(available_items)
@@ -52,6 +52,24 @@ class NomalDogHit(RandomEvent):
         pipeline.hset(self.userkey,"place",2)
         pipeline.execute()
         outStr = '''你看到一条狗正在打坐，你从后面偷袭击杀了它，损失hp{reduce_hp},你获得了金钱:{add_money}，道具:{add_items}
+请选择:
+1.确认
+'''
+        return outStr.format(**resultdict)
+    
+class DaBaoJian(RandomEvent):
+    def work(self):
+        increase_hp_limit = random.randint(2, 4)
+        resultdict = {
+                      "increase_hp_limit":increase_hp_limit
+                      }
+        newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
+        pipeline = self.r.pipeline()
+        pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
+        pipeline.hset(self.userkey,"hp_now",newhp)
+        pipeline.hset(self.userkey,"place",2)
+        pipeline.execute()
+        outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
 请选择:
 1.确认
 '''
