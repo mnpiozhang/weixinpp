@@ -153,7 +153,8 @@ def hitDogEvent(userkey,inventorykey,userInfo,inventoryInfo,r):
     eventDict = {
             'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
             'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
-            'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,inventoryInfo,r)
+            'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,inventoryInfo,r),
+            'baigudaoren':events.BaiGuDaoRen(userkey,inventorykey,userInfo,inventoryInfo,r)
             }
     randomEvent = random.choice(eventDict.keys())
     return eventDict[randomEvent].work()
