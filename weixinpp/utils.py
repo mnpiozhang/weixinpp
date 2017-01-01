@@ -10,6 +10,8 @@ import psutil
 from decorators import is_hp_empty
 from common import bytes2human, redisConnect
 import config as cf
+import events
+import random
 
 ############工具方法or参数###############
 
@@ -146,6 +148,15 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
     else:
         return cf.SHOP_BEGIN_NOMONEY
 
+
+def hitDogEvent(userkey,inventorykey,userInfo,r):
+    eventDict = {
+            'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,r),
+            'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,r)
+            }
+    randomEvent = random.choice(eventDict.keys())
+    return eventDict[randomEvent].work()
+
 @is_hp_empty
 def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
     userInfo = r.hgetall(userkey)
@@ -170,10 +181,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             r.hmset(userkey, userInfo)
             return cf.SHOP_BEGIN
         elif messageReceive.Content == "3":
-            #userInfo["hp_now"] = int(userInfo["hp_now"]) -1
-            #r.hmset(userkey, userInfo)
-            r.hincrby(userkey,"hp_now",-1)
-            return cf.HIT_DOG.format(**userInfo)
+            return hitDogEvent(userkey,inventorykey,userInfo,r)
         #选择c 看状态
         elif messageReceive.Content == "c":
             #将两个字典合并起来
@@ -195,6 +203,15 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
         elif messageReceive.Content == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},**userInfo))
+        else:
+            return "hehe,请做一个选择"
+        #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
+    #地点2 打狗事件结束
+    elif userInfo["place"] == "2":
+        #选择1确认信息，能进入以下逻辑说明HP大于0,然后地点改为0
+        if messageReceive.Content == "1":
+            r.hset(userkey,"where",0)
+            return cf.COMEBACK_BEGIN
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
