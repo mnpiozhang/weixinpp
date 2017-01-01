@@ -99,6 +99,7 @@ class ManySwords(RandomEvent):
             pipeline.hset(self.userkey,"place",2)
             pipeline.zincrby(self.inventorykey,"万剑归宗",1)
             pipeline.zrem(self.inventorykey,"万骨魔剑","木剑","铁剑","塑料剑","橡皮剑")
+            pipeline.execute()
             outStr = '''你遇到一个样貌落魄的男人,声称只要找到万骨魔剑,塑料剑,橡皮剑,铁剑,木剑,他就传授你绝学万剑归宗.
 你恰好有他要的东西。你抱着试试看的心态把东西交给了他。一瞬间脑海里面就浮现出了很多玄妙的招式。当你醒过来的时候，那个男人已经离开了。学会了万剑归宗
 请选择:
