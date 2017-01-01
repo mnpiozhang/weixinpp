@@ -152,7 +152,8 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
 def hitDogEvent(userkey,inventorykey,userInfo,r):
     eventDict = {
             'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,r),
-            'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,r)
+            'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,r),
+            'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,r)
             }
     randomEvent = random.choice(eventDict.keys())
     return eventDict[randomEvent].work()
