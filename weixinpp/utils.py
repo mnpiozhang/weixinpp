@@ -154,12 +154,13 @@ def hitDogEvent(userkey,inventorykey,userInfo,inventoryInfo,r):
             'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
             'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
             'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,inventoryInfo,r),
-            'baigudaoren':events.BaiGuDaoRen(userkey,inventorykey,userInfo,inventoryInfo,r)
+            'baigudaoren':events.BaiGuDaoRen(userkey,inventorykey,userInfo,inventoryInfo,r),
+            'manyswords':events.ManySwords(userkey,inventorykey,userInfo,inventoryInfo,r)
             }
     if userInfo.has_key('baigudaoren'):
         if userInfo['baigudaoren'] == "3":
             eventDict.pop('baigudaoren')
-    print eventDict
+    #print eventDict
     randomEvent = random.choice(eventDict.keys())
     return eventDict[randomEvent].work()
 
