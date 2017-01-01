@@ -25,9 +25,9 @@ class SmallDogHit(RandomEvent):
         pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
         pipeline.hincrby(self.userkey,"money",add_money)
         pipeline.zincrby(self.inventorykey,add_items,1)
-        pipeline.hset(self.userkey,"where",2)
+        pipeline.hset(self.userkey,"place",2)
         pipeline.execute()
-        outStr = '''你遇到了一条小狗，它朝你卖萌，但是你狠下心击杀了它，你损失{reduce_hp},你获得了金钱{add_money}，道具{add_items}
+        outStr = '''你遇到了一条小狗，它朝你卖萌，但是你狠下心击杀了它，你损失hp{reduce_hp},你获得了金钱:{add_money}，道具:{add_items}
 请选择:
 1.确认
 '''
@@ -49,9 +49,9 @@ class NomalDogHit(RandomEvent):
         pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
         pipeline.hincrby(self.userkey,"money",add_money)
         pipeline.zincrby(self.inventorykey,add_items,1)
-        pipeline.hset(self.userkey,"where",2)
+        pipeline.hset(self.userkey,"place",2)
         pipeline.execute()
-        outStr = '''你看到一条狗正在打坐，你从后面偷袭击杀了它，损失{reduce_hp},你获得了金钱{add_money}，道具{add_items}
+        outStr = '''你看到一条狗正在打坐，你从后面偷袭击杀了它，损失hp{reduce_hp},你获得了金钱:{add_money}，道具:{add_items}
 请选择:
 1.确认
 '''
