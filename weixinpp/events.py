@@ -97,21 +97,43 @@ class BaiGuDaoRen(RandomEvent):
         if self.userInfo.has_key('baigudaoren'):
             if self.userInfo["baigudaoren"] == "1":
                 self.r.hset(self.userkey,"place",2)
+                self.r.hset(self.userkey,"baigudaoren",2)
                 outStr = '''自从上次遇到白骨道人后，你久久不能忘怀她的身影。你再一次来到了白骨洞。但是没有见到她。
 请选择:
 1.确认
 '''
                 return outStr
+            elif self.userInfo["baigudaoren"] == "2":
+                reduce_hp = random.randint(4, 5)
+                available_items = ["化功大法","万骨魔剑"]
+                add_items = random.choice(available_items)
+                resultdict = {
+                              "reduce_hp":reduce_hp,
+                              "add_items":add_items
+                              }
+                pipeline = self.r.pipeline()
+                pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
+                pipeline.zincrby(self.inventorykey,add_items,1)
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.hset(self.userkey,"baigudaoren",3)
+                pipeline.execute()
+                outStr = '''你还是不死心，决定最后再去见一次白骨道人。在离白骨洞很远的地方就听到了厮杀声。你上前一看有人正围攻白骨洞，你立即前去助阵。在身负重伤的情况下帮助白骨道人击败敌人。
+白骨道人最后还是死了，临死前她告诉你之前的敌人是驼峰山庄的人，并留给了你她的一样宝物。
+损失hp{reduce_hp},道具:{add_items}
+请选择:
+1.确认
+'''
+                return outStr.format(**resultdict)
         else:
             boneNum = is_item_exist(self.inventoryInfo,"骨头")
-            if boneNum >= 10:
+            if boneNum >= 2:
                 pipeline = self.r.pipeline()
                 pipeline.hset(self.userkey,"place",2)
-                pipeline.zincrby(self.inventorykey,"骨头",-10)
+                pipeline.zincrby(self.inventorykey,"骨头",-2)
                 pipeline.hset(self.userkey,"baigudaoren",1)
                 pipeline.execute()
-                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出10根骨头，不然就要你好看。
-你一摸口袋，发现之前打狗得到了很多狗骨头，你交出了10根给白骨道人后离开了。
+                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出2根骨头，不然就要你好看。
+你一摸口袋，发现之前打狗得到了很多狗骨头，你交出了2根给白骨道人后离开了。
 请选择:
 1.确认
 '''
@@ -119,7 +141,7 @@ class BaiGuDaoRen(RandomEvent):
             else:
                 self.r.hset(self.userkey,"baigudaoren",1)
                 self.r.hset(self.userkey,"place",2)
-                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出10根骨头，不然就要你好看。
+                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出2根骨头，不然就要你好看。
 由于你没有足够的骨头，只能上前应战。大战三百回合后，第二天一早你离开了白骨洞。
 请选择:
 1.确认
