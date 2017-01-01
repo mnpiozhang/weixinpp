@@ -149,11 +149,11 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
         return cf.SHOP_BEGIN_NOMONEY
 
 
-def hitDogEvent(userkey,inventorykey,userInfo,r):
+def hitDogEvent(userkey,inventorykey,userInfo,inventoryInfo,r):
     eventDict = {
-            'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,r),
-            'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,r),
-            'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,r)
+            'smalldoghit':events.SmallDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
+            'nomaldoghit':events.NomalDogHit(userkey,inventorykey,userInfo,inventoryInfo,r),
+            'dabaojian':events.DaBaoJian(userkey,inventorykey,userInfo,inventoryInfo,r)
             }
     randomEvent = random.choice(eventDict.keys())
     return eventDict[randomEvent].work()
@@ -182,7 +182,7 @@ def goOnGames(messageReceive,userkey,inventorykey,marketkey,r):
             r.hmset(userkey, userInfo)
             return cf.SHOP_BEGIN
         elif messageReceive.Content == "3":
-            return hitDogEvent(userkey,inventorykey,userInfo,r)
+            return hitDogEvent(userkey,inventorykey,userInfo,inventoryInfo,r)
         #选择c 看状态
         elif messageReceive.Content == "c":
             #将两个字典合并起来

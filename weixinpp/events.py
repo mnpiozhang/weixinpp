@@ -3,11 +3,27 @@
 import random
 from werkzeug.contrib.profiler import available
 
+
+#####工具方法
+def is_item_exist(inventoryInfo,itemname):
+    '''
+    inventoryInfo 主人公背包列表ex: [('a','1'),('b','2')]
+    itemname 道具名
+    return 如果道具有就返回道具数量，没有就返回0
+    '''
+    a = dict(inventoryInfo)
+    if a.has_key(itemname):
+        return int(a[itemname])
+    else:
+        return 0
+
+#####################事件类
 class RandomEvent:
-    def __init__(self,userkey,inventorykey,userInfo,r):
+    def __init__(self,userkey,inventorykey,userInfo,inventoryInfo,r):
         self.userkey = userkey
         self.inventorykey = inventorykey
         self.userInfo = userInfo
+        self.inventoryInfo = inventoryInfo
         self.r = r
         
 class SmallDogHit(RandomEvent):
@@ -67,6 +83,7 @@ class DaBaoJian(RandomEvent):
         pipeline = self.r.pipeline()
         pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
         pipeline.hset(self.userkey,"hp_now",newhp)
+        pipeline.hset(self.userkey,"money",0)
         pipeline.hset(self.userkey,"place",2)
         pipeline.execute()
         outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
@@ -74,3 +91,37 @@ class DaBaoJian(RandomEvent):
 1.确认
 '''
         return outStr.format(**resultdict)
+    
+class BaiGuDaoRen(RandomEvent):
+    def work(self):
+        if self.userInfo.has_key('baigudaoren'):
+            if self.userInfo["baigudaoren"] == "1":
+                self.r.hset(self.userkey,"place",2)
+                outStr = '''自从上次遇到白骨道人后，你久久不能忘怀她的身影。你再一次来到了白骨洞。但是没有见到她。
+请选择:
+1.确认
+'''
+                return outStr
+        else:
+            boneNum = is_item_exist(self.inventoryInfo,"骨头")
+            if boneNum >= 10:
+                pipeline = self.r.pipeline()
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.zincrby(self.inventorykey,"骨头",-10)
+                pipeline.hset(self.userkey,"baigudaoren",1)
+                pipeline.execute()
+                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出10根骨头，不然就要你好看。
+你一摸口袋，发现之前打狗得到了很多狗骨头，你交出了10根给白骨道人后离开了。
+请选择:
+1.确认
+'''
+                return outStr
+            else:
+                self.r.hset(self.userkey,"baigudaoren",1)
+                self.r.hset(self.userkey,"place",2)
+                outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出10根骨头，不然就要你好看。
+由于你没有足够的骨头，只能上前应战。大战三百回合后，第二天一早你离开了白骨洞。
+请选择:
+1.确认
+'''
+                return outStr
