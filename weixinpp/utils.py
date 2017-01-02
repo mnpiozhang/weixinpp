@@ -216,7 +216,7 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
             return cf.OUT_SHOP
         elif messageReceive.Content == "c":
             #将两个字典合并起来
-            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},{"force":role_force(forceInfo)},**userInfo))
+            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
