@@ -51,6 +51,7 @@ c.查看状态'''
 ROLE_STATE='''你是少侠胡二虎
 HP:{hp_now}/{hp_limit}
 money:{money}
+功力值:{force}
 道具:{items}
 '''
 

@@ -19,11 +19,13 @@ def is_item_exist(inventoryInfo,itemname):
 
 #####################事件类
 class RandomEvent:
-    def __init__(self,userkey,inventorykey,userInfo,inventoryInfo,r):
+    def __init__(self,userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r):
         self.userkey = userkey
         self.inventorykey = inventorykey
+        self.forcekey = forcekey
         self.userInfo = userInfo
         self.inventoryInfo = inventoryInfo
+        self.forceInfo = forceInfo
         self.r = r
         
 class SmallDogHit(RandomEvent):
@@ -98,6 +100,7 @@ class ManySwords(RandomEvent):
             pipeline = self.r.pipeline()
             pipeline.hset(self.userkey,"place",2)
             pipeline.zincrby(self.inventorykey,"万剑归宗",1)
+            pipeline.hset(self.userkey,"manyswords",1)
             pipeline.zrem(self.inventorykey,"万骨魔剑","木剑","铁剑","塑料剑","橡皮剑")
             pipeline.execute()
             outStr = '''你遇到一个样貌落魄的男人,声称只要找到万骨魔剑,塑料剑,橡皮剑,铁剑,木剑,他就传授你绝学万剑归宗.
