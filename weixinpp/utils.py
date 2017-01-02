@@ -199,7 +199,7 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         #选择c 看状态
         elif messageReceive.Content == "c":
             #将两个字典合并起来
-            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo)},{"force":role_force(forceInfo)},**userInfo))
+            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
         else:
             return "hehe,请做一个选择"
     #地点1 在商店
