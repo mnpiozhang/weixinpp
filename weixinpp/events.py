@@ -87,8 +87,10 @@ class DaBaoJian(RandomEvent):
         pipeline.hset(self.userkey,"hp_now",newhp)
         pipeline.hset(self.userkey,"money",0)
         pipeline.hset(self.userkey,"place",2)
+        pipeline.zincrby(self.forcekey,"胡二虎",2)
         pipeline.execute()
         outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
+功力提升2点
 请选择:
 1.确认
 '''
@@ -100,11 +102,13 @@ class ManySwords(RandomEvent):
             pipeline = self.r.pipeline()
             pipeline.hset(self.userkey,"place",2)
             pipeline.zincrby(self.inventorykey,"万剑归宗",1)
+            pipeline.zincrby(self.forcekey,"胡二虎",25)
             pipeline.hset(self.userkey,"manyswords",1)
             pipeline.zrem(self.inventorykey,"万骨魔剑","木剑","铁剑","塑料剑","橡皮剑")
             pipeline.execute()
             outStr = '''你遇到一个样貌落魄的男人,声称只要找到万骨魔剑,塑料剑,橡皮剑,铁剑,木剑,他就传授你绝学万剑归宗.
-你恰好有他要的东西。你抱着试试看的心态把东西交给了他。一瞬间脑海里面就浮现出了很多玄妙的招式。当你醒过来的时候，那个男人已经离开了。学会了万剑归宗
+你恰好有他要的东西。你抱着试试看的心态把东西交给了他。一瞬间脑海里面就浮现出了很多玄妙的招式。当你醒过来的时候感觉菊花有点痒，那个男人已经离开了，你学会了万剑归宗。
+功力提升25点
 请选择:
 1.确认
 '''
@@ -141,10 +145,11 @@ class BaiGuDaoRen(RandomEvent):
                 pipeline.zincrby(self.inventorykey,add_items,1)
                 pipeline.hset(self.userkey,"place",2)
                 pipeline.hset(self.userkey,"baigudaoren",3)
+                pipeline.zincrby(self.forcekey,"胡二虎",10)
                 pipeline.execute()
                 outStr = '''你还是不死心，决定最后再去见一次白骨道人。在离白骨洞很远的地方就听到了厮杀声。你上前一看有人正围攻白骨洞，你立即前去助阵。在身负重伤的情况下帮助白骨道人击败敌人。
 白骨道人最后还是死了，临死前她告诉你之前的敌人是驼峰山庄的人，并留给了你她的一样宝物。
-损失hp{reduce_hp},道具:{add_items}
+损失hp{reduce_hp},获得道具:{add_items}，功力提升10
 请选择:
 1.确认
 '''
@@ -166,8 +171,10 @@ class BaiGuDaoRen(RandomEvent):
             else:
                 self.r.hset(self.userkey,"baigudaoren",1)
                 self.r.hset(self.userkey,"place",2)
+                self.r.zincrby(self.forcekey,"胡二虎",3)
                 outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出2根骨头，不然就要你好看。
 由于你没有足够的骨头，只能上前应战。大战三百回合后，第二天一早你离开了白骨洞。
+功力提升3点
 请选择:
 1.确认
 '''
