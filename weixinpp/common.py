@@ -109,6 +109,6 @@ def wulin_rank(forceInfo):
 #去除微信所发消息的空格并小写
 def strip_and_lower(inputStr):
     if isinstance(inputStr,basestring):
-        return str.strip().lower
+        return inputStr.strip().lower()
     else:
         return "help"
