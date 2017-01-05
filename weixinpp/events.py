@@ -1,20 +1,8 @@
 #!/usr/bin/env python
 #_*_ coding:utf-8 _*_
 import random
+from common import is_item_exist
 
-
-#####工具方法
-def is_item_exist(inventoryInfo,itemname):
-    '''
-    inventoryInfo 主人公背包列表ex: [('a','1'),('b','2')]
-    itemname 道具名
-    return 如果道具有就返回道具数量，没有就返回0
-    '''
-    a = dict(inventoryInfo)
-    if a.has_key(itemname):
-        return int(a[itemname])
-    else:
-        return 0
 
 #####################事件类
 class RandomEvent:

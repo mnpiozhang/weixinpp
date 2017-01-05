@@ -3,49 +3,13 @@
 from datetime import  datetime
 import hashlib
 from decorators import is_hp_empty
-from common import bytes2human, redisConnect
+from common import bytes2human, redisConnect,itemslist_to_str,role_force,wulin_rank
 import config as cf
 import events
 import random
 from redis.utils import pipeline
 
-############工具方法or参数###############
 
-#ex[('a',1),('b',2)] ==> aX1 bX2
-def itemslist_to_str(inventoryInfo):
-    itemsOut=""
-    for k,v in inventoryInfo:
-        strOut = k + 'X' + str(v)
-        itemsOut = itemsOut + " " + strOut
-    return itemsOut
-
-def role_force(forceInfo):
-    a = dict(forceInfo)
-    return a["胡二虎"]
-
-    
-def divide_into_paragraphs(data):
-    parsedlist = []
-    a = ""
-    tmplist = data.splitlines(True)
-    for i in tmplist:
-        if i.strip():
-            a = a + i
-        else:
-            parsedlist.append(a)
-            a=""
-    parsedlist.append(a)
-    return parsedlist
-
-#返回天梯排行的结果
-def wulin_rank(forceInfo):
-    outStr="武林天梯排名\n"
-    a = 1
-    for k,v in forceInfo:
-        outLine = "第%s:%s 功力:%s\n" %(str(a),k,str(v))
-        outStr = outStr + outLine
-        a = a + 1
-    return outStr
 
 ########################################################
 #具体处理逻辑
