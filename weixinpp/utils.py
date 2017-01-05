@@ -149,7 +149,7 @@ def startPlay(messageReceive,userkey,inventorykey,forcekey,r):
     pipeline.hmset(userkey, attr_dict)
     #r.sadd(inventorykey,"绝世神功")
     pipeline.zadd(inventorykey,"绝世神功",1)
-    for k,v in cf.FORCE_RANK:
+    for k,v in cf.FORCE_RANK.iteritems():
         pipeline.zadd(forcekey,k,v)
     pipeline.execute()
     return cf.START_GAME.format(**attr_dict)
