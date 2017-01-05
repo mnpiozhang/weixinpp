@@ -47,7 +47,7 @@ def wulin_rank(forceInfo):
     outStr="武林天梯排名\n"
     a = 1
     for k,v in forceInfo:
-        outLine = "第%s. %s 功力:%s\n" %(str(a),k,str(v))
+        outLine = "第%s:%s 功力:%s\n" %(str(a),k,str(v))
         outStr = outStr + outLine
         a = a + 1
     return outStr
