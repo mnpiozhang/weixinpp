@@ -178,6 +178,8 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         elif inputInfo == "r":
             #将两个字典合并起来
             return wulin_rank(forceInfo)
+        elif inputInfo in ["?","？","help"] :
+            return cf.HELP_STR
         else:
             return "hehe,请做一个选择"
     #地点1 在商店
@@ -198,6 +200,8 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         elif inputInfo == "r":
             #将两个字典合并起来
             return wulin_rank(forceInfo)
+        elif inputInfo in ["?","？","help"] :
+            return cf.HELP_STR
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
@@ -207,6 +211,8 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         if inputInfo == "1":
             r.hset(userkey,"place",0)
             return cf.COMEBACK_BEGIN
+        elif inputInfo in ["?","？","help"] :
+            return cf.HELP_STR
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
