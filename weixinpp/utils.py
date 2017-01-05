@@ -3,7 +3,7 @@
 from datetime import  datetime
 import hashlib
 from decorators import is_hp_empty
-from common import bytes2human, redisConnect,itemslist_to_str,role_force,wulin_rank
+from common import bytes2human, redisConnect,itemslist_to_str,role_force,wulin_rank,strip_and_lower
 import config as cf
 import events
 import random
@@ -18,12 +18,14 @@ def resp_content(messageReceive):
     userkey = "users:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
     inventorykey = "inventory:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
     forcekey = "force:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
+    userinputcontent = strip_and_lower(messageReceive.Content)
     if r.exists(userkey):
         return goOnGames(messageReceive,userkey,inventorykey,forcekey,r) 
     else:
-        if messageReceive.Content == "1":
+        if userinputcontent == "1":
             return startPlay(messageReceive,userkey,inventorykey,forcekey,r)
-        elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
+        #elif strip_and_lower(messageReceive.Content) == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
+        elif userinputcontent in ["?","？","help"] :
             return cf.HELP_STR
         else:
             return "hehe,please input 1 or ?"
@@ -149,10 +151,11 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
     userInfo = r.hgetall(userkey)
     inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,score_cast_func=intern)
     forceInfo = r.zrevrange(forcekey,0,-1,withscores=True,score_cast_func=intern)
+    inputInfo = strip_and_lower(messageReceive.Content)
     #地点为0在新手村
     if userInfo["place"] == "0":
         #选择1 进客栈
-        if messageReceive.Content == "1":
+        if inputInfo == "1":
             #redis里面取出来的字典的值都变为str了
             if int(userInfo["money"]) -100 >= 0:
                 userInfo["money"] = int(userInfo["money"]) -100
@@ -162,17 +165,17 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
             else:
                 return cf.NOMONEY_STAY_HOTEL.format(**userInfo)
         #选择2 去商店--初始化的时候
-        elif messageReceive.Content == "2":
+        elif inputInfo == "2":
             userInfo["place"] = 1
             r.hmset(userkey, userInfo)
             return cf.SHOP_BEGIN
-        elif messageReceive.Content == "3":
+        elif inputInfo == "3":
             return hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r)
         #选择c 看状态
-        elif messageReceive.Content == "c":
+        elif inputInfo == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
-        elif messageReceive.Content == "r":
+        elif inputInfo == "r":
             #将两个字典合并起来
             return wulin_rank(forceInfo)
         else:
@@ -180,19 +183,19 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
     #地点1 在商店
     elif userInfo["place"] == "1":
         #选择木剑 价格200
-        if messageReceive.Content == "1":
+        if inputInfo == "1":
             return buySomething("木剑",200,userkey,inventorykey,userInfo,r)
         #选择铁剑 价格500
-        elif messageReceive.Content == "2":
+        elif inputInfo == "2":
             return buySomething("铁剑",500,userkey,inventorykey,userInfo,r)
-        elif messageReceive.Content == "0":
+        elif inputInfo == "0":
             userInfo["place"] = 0
             r.hmset(userkey, userInfo)
             return cf.OUT_SHOP
-        elif messageReceive.Content == "c":
+        elif inputInfo == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
-        elif messageReceive.Content == "r":
+        elif inputInfo == "r":
             #将两个字典合并起来
             return wulin_rank(forceInfo)
         else:
@@ -201,7 +204,7 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
     #地点2 打狗事件结束
     elif userInfo["place"] == "2":
         #选择1确认信息，能进入以下逻辑说明HP大于0,然后地点改为0
-        if messageReceive.Content == "1":
+        if inputInfo == "1":
             r.hset(userkey,"place",0)
             return cf.COMEBACK_BEGIN
         else:

@@ -45,6 +45,8 @@ def bytes2human(n, format='%(value).1f %(symbol)s', symbols='customary'):
             return format % locals()
     return format % dict(symbol=symbols[0], value=n)
 
+
+#返回redis连接对象
 def redisConnect():
     r = redis.Redis(connection_pool=pool)
     return r
@@ -52,7 +54,7 @@ def redisConnect():
 ############工具方法or参数###############
 
 #ex[('a',1),('b',2)] ==> aX1 bX2
-#返回道具数量和数量 结果为字符串
+#返回所有道具和数量 结果为字符串
 def itemslist_to_str(inventoryInfo):
     itemsOut=""
     for k,v in inventoryInfo:
@@ -60,11 +62,25 @@ def itemslist_to_str(inventoryInfo):
         itemsOut = itemsOut + " " + strOut
     return itemsOut
 
+#如果道具有就返回道具数量，没有就返回0
+def is_item_exist(inventoryInfo,itemname):
+    '''
+    inventoryInfo 主人公背包列表ex: [('a','1'),('b','2')]
+    itemname 道具名
+    return 如果道具有就返回道具数量，没有就返回0
+    '''
+    a = dict(inventoryInfo)
+    if a.has_key(itemname):
+        return int(a[itemname])
+    else:
+        return 0
+
 #返回主人公功力值
 def role_force(forceInfo):
     a = dict(forceInfo)
     return a["胡二虎"]
 
+'''
 #将dmi信息切分成段落，现专门搞游戏了已不用
 def divide_into_paragraphs(data):
     parsedlist = []
@@ -78,6 +94,7 @@ def divide_into_paragraphs(data):
             a=""
     parsedlist.append(a)
     return parsedlist
+'''
 
 #返回天梯排行的结果,返回结果为字符串
 def wulin_rank(forceInfo):
@@ -89,15 +106,9 @@ def wulin_rank(forceInfo):
         a = a + 1
     return outStr
 
-
-def is_item_exist(inventoryInfo,itemname):
-    '''
-    inventoryInfo 主人公背包列表ex: [('a','1'),('b','2')]
-    itemname 道具名
-    return 如果道具有就返回道具数量，没有就返回0
-    '''
-    a = dict(inventoryInfo)
-    if a.has_key(itemname):
-        return int(a[itemname])
+#去除微信所发消息的空格并小写
+def strip_and_lower(inputStr):
+    if isinstance(inputStr,basestring):
+        return str.strip().lower
     else:
-        return 0
+        return "help"
