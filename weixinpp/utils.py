@@ -12,6 +12,7 @@ from common import bytes2human, redisConnect
 import config as cf
 import events
 import random
+from redis.utils import pipeline
 
 ############工具方法or参数###############
 
@@ -41,6 +42,15 @@ def divide_into_paragraphs(data):
     parsedlist.append(a)
     return parsedlist
 
+#返回天梯排行的结果
+def wulin_rank(forceInfo):
+    outStr="武林天梯排名\n"
+    a = 1
+    for k,v in forceInfo:
+        outLine = "第%s. %s 功力:%s\n" %(str(a),k,str(v))
+        outStr = outStr + outLine
+        a = a + 1
+    return outStr
 
 ########################################################
 #具体处理逻辑
@@ -135,10 +145,13 @@ def startPlay(messageReceive,userkey,inventorykey,forcekey,r):
     r--------------------Redis链接对象
     '''
     attr_dict = cf.INIT_STATE
-    r.hmset(userkey, attr_dict)
+    pipeline = r.pipeline()
+    pipeline.hmset(userkey, attr_dict)
     #r.sadd(inventorykey,"绝世神功")
-    r.zadd(inventorykey,"绝世神功",1)
-    r.zadd(forcekey,"胡二虎",10,"混元霹雳手成昆",5)
+    pipeline.zadd(inventorykey,"绝世神功",1)
+    for k,v in cf.FORCE_RANK:
+        pipeline.zadd(forcekey,k,v)
+    pipeline.execute()
     return cf.START_GAME.format(**attr_dict)
     #return "我还没想好...."
 
@@ -176,7 +189,7 @@ def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r
 def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
     userInfo = r.hgetall(userkey)
     inventoryInfo = r.zrange(inventorykey,0,-1,withscores=True,score_cast_func=intern)
-    forceInfo = r.zrange(forcekey,0,-1,withscores=True,score_cast_func=intern)
+    forceInfo = r.zrevrange(forcekey,0,-1,withscores=True,score_cast_func=intern)
     #地点为0在新手村
     if userInfo["place"] == "0":
         #选择1 进客栈
@@ -200,6 +213,9 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         elif messageReceive.Content == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
+        elif messageReceive.Content == "r":
+            #将两个字典合并起来
+            return wulin_rank(forceInfo)
         else:
             return "hehe,请做一个选择"
     #地点1 在商店
@@ -217,6 +233,9 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
         elif messageReceive.Content == "c":
             #将两个字典合并起来
             return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
+        elif messageReceive.Content == "r":
+            #将两个字典合并起来
+            return wulin_rank(forceInfo)
         else:
             return "hehe,请做一个选择"
         #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
