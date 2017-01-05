@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 #_*_ coding:utf-8 _*_
 import random
-from werkzeug.contrib.profiler import available
 
 
 #####工具方法

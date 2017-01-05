@@ -1,12 +1,7 @@
 #!/usr/bin/env python
 #_*_ coding:utf-8 _*_
 from datetime import  datetime
-import multiprocessing
-import os
-import platform
-import socket
 import hashlib
-import psutil
 from decorators import is_hp_empty
 from common import bytes2human, redisConnect
 import config as cf
