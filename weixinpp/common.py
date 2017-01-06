@@ -80,22 +80,6 @@ def role_force(forceInfo):
     a = dict(forceInfo)
     return a["胡二虎"]
 
-'''
-#将dmi信息切分成段落，现专门搞游戏了已不用
-def divide_into_paragraphs(data):
-    parsedlist = []
-    a = ""
-    tmplist = data.splitlines(True)
-    for i in tmplist:
-        if i.strip():
-            a = a + i
-        else:
-            parsedlist.append(a)
-            a=""
-    parsedlist.append(a)
-    return parsedlist
-'''
-
 #返回天梯排行的结果,返回结果为字符串
 def wulin_rank(forceInfo):
     outStr="武林天梯排名\n"

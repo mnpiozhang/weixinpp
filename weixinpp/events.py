@@ -108,6 +108,7 @@ class ManySwords(RandomEvent):
 1.确认
 '''
             return outStr
+
 class BaiGuDaoRen(RandomEvent):
     def work(self):
         if self.userInfo.has_key('baigudaoren'):

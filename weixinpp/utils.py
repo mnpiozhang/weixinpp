@@ -12,7 +12,7 @@ from redis.utils import pipeline
 
 
 ########################################################
-#具体处理逻辑
+#接收用户发送的消息
 def resp_content(messageReceive):
     r = redisConnect()
     userkey = "users:%s" %(hashlib.md5(messageReceive.FromUserName).hexdigest())
@@ -24,76 +24,11 @@ def resp_content(messageReceive):
     else:
         if userinputcontent == "1":
             return startPlay(messageReceive,userkey,inventorykey,forcekey,r)
-        #elif strip_and_lower(messageReceive.Content) == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
         elif userinputcontent in ["?","？","help"] :
             return cf.HELP_STR
         else:
             return "hehe,please input 1 or ?"
-'''
-#######################本来是想搞搞服务器信息查询的 还是算了，专门写个游戏玩玩
-def resp_content(messageReceive):
-    r = redisConnect()
-    userkey = hashlib.md5(messageReceive.FromUserName).hexdigest()
-    if r.exists(userkey):
-        return goOnGames(messageReceive,userkey,r) 
-    else:
-        if messageReceive.Content == "1":
-            return "hostname: " + socket.gethostname() +"\nos: " + "-".join(platform.dist())
-        elif messageReceive.Content == "2":
-            return getMem()
-        elif messageReceive.Content == "3":
-            return getOnlineUser()
-        elif messageReceive.Content == "4":
-            return getCpu()
-        elif messageReceive.Content == "5":
-            return startPlay(messageReceive,userkey,r)
-        elif messageReceive.Content == "?" or messageReceive.Content == "？" or  messageReceive.Content == "help":
-            return cf.HELP_STR
-        else:
-            return "hehe"
-'''    
-'''
 
-#服务器基本信息 
-def getMem():
-    memInfo = psutil.virtual_memory()
-    totalMem = memInfo.total
-    availableMem = memInfo.available
-    resp = "总内存  %s\n可用内存  %s" %(bytes2human(totalMem),bytes2human(availableMem))
-    return resp
-
-def getOnlineUser():
-    ret = []
-    for u in psutil.users():
-        ret.append([u.name,
-                    u.host,
-                    datetime.fromtimestamp(u.started).strftime("%Y%m%d/%H:%M"),
-                    ])
-    resp = ""
-    for i in  ret:
-        if i[1] == "":
-            i[1] = 'unknown'
-        resp = resp + "User:%s From:%s Time:%s\n" %(i[0],i[1],i[2])
-    return resp
-
-def getCpu():
-    cpuModel =  os.popen("cat /proc/cpuinfo  |grep 'model name' |sort | uniq |awk -F\: '{print $2}' |sed 's/^[ \t]*//g'").read()
-    cpuPhysical = os.popen("cat /proc/cpuinfo  |grep 'physical id'|sort|uniq |wc -l").read()
-    cpuCore = os.popen("cat /proc/cpuinfo  |grep 'core id'|sort |uniq|wc -l").read()
-    cpuProcess = multiprocessing.cpu_count()
-    return "型号:" + cpuModel.strip("\n") +"\n物理个数:" + cpuPhysical.strip("\n")+"\ncore个数:" + cpuCore.strip("\n")+"\n线程个数:" + str(cpuProcess).strip("\n")
-'''
-'''
-def getHardware():
-    dmiInfo = os.popen("dmidecode").read()
-    dmi = divide_into_paragraphs(dmiInfo)
-    for i in dmi:
-        if "System Information" in i:
-            sysinfo = i.strip().split("\n")
-            hostinfodic = dict([a.strip().split(": ") for a in sysinfo if ":" in a])
-    #print hostinfo
-    return "SN: " + hostinfodic['Serial Number'] + "\nManufacturer: " + hostinfodic['Manufacturer'] +"\nProduct: " + hostinfodic['Product Name']
-'''
 
 ##############################
 #游戏处理逻辑
@@ -136,7 +71,7 @@ def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r
             'manyswords':events.ManySwords(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r)
             }
     if userInfo.has_key('baigudaoren'):
-        #判断有key叫baigudaoren并切value为3则，白骨道人事件已触发并且流程结束。不再出现。
+        #判断有key叫baigudaoren且value为3时，白骨道人事件已触发并且流程结束。不再出现。
         if userInfo['baigudaoren'] == "3":
             eventDict.pop('baigudaoren')
     #判断有key叫manyswords，则万剑归宗事件已经结束。不再出现
@@ -204,7 +139,6 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
             return cf.HELP_STR
         else:
             return "hehe,请做一个选择"
-        #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
     #地点2 打狗事件结束
     elif userInfo["place"] == "2":
         #选择1确认信息，能进入以下逻辑说明HP大于0,然后地点改为0
@@ -215,4 +149,3 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
             return cf.HELP_STR
         else:
             return "hehe,请做一个选择"
-        #r.hincrby('16d3bf1e764582efffcb2255d025cf15','money',100)
