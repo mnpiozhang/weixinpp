@@ -132,6 +132,7 @@ class DaBaoJian(RandomEvent):
 请选择:
 1.确认
 '''
+                return outStr.format(**resultdict)
         else:
             increase_hp_limit = random.randint(2, 4)
             resultdict = {
