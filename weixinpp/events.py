@@ -2,7 +2,8 @@
 #_*_ coding:utf-8 _*_
 import random
 from common import is_item_exist
-
+import inspect
+import sys 
 
 #####################事件类
 class RandomEvent:
@@ -167,3 +168,10 @@ class BaiGuDaoRen(RandomEvent):
 1.确认
 '''
                 return outStr
+            
+###################返回所有事件类，不包含父类RandomEvent    
+def all_events_class():
+    allClassIncludeSuper = inspect.getmembers(sys.modules[__name__], inspect.isclass)
+    return [ x for x in allClassIncludeSuper if not x[0] == "RandomEvent"]
+
+#print all_events_class()

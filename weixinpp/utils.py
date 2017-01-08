@@ -5,7 +5,7 @@ import hashlib
 from decorators import is_hp_empty
 from common import bytes2human, redisConnect,itemslist_to_str,role_force,wulin_rank,strip_and_lower
 import config as cf
-import events
+from events import all_events_class
 import random
 from redis.utils import pipeline
 
@@ -63,6 +63,10 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
 
 
 def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r):
+    eventDict = {}
+    for className,eventClass in all_events_class():
+        eventDict[className] = eventClass(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r)
+    '''
     eventDict = {
             'smalldoghit':events.SmallDogHit(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r),
             'nomaldoghit':events.NomalDogHit(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r),
@@ -70,13 +74,15 @@ def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r
             'baigudaoren':events.BaiGuDaoRen(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r),
             'manyswords':events.ManySwords(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r)
             }
-    if userInfo.has_key('baigudaoren'):
+    '''
+    print eventDict
+    if userInfo.has_key('BaiGuDaoRen'):
         #判断有key叫baigudaoren且value为3时，白骨道人事件已触发并且流程结束。不再出现。
-        if userInfo['baigudaoren'] == "3":
-            eventDict.pop('baigudaoren')
+        if userInfo['BaiGuDaoRen'] == "3":
+            eventDict.pop('BaiGuDaoRen')
     #判断有key叫manyswords，则万剑归宗事件已经结束。不再出现
-    elif userInfo.has_key('manyswords'):
-        eventDict.pop('manyswords')
+    elif userInfo.has_key('ManySwords'):
+        eventDict.pop('ManySwords')
     #print eventDict
     randomEvent = random.choice(eventDict.keys())
     return eventDict[randomEvent].work()
