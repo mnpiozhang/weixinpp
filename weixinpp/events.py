@@ -65,24 +65,49 @@ class NomalDogHit(RandomEvent):
     
 class DaBaoJian(RandomEvent):
     def work(self):
-        increase_hp_limit = random.randint(2, 4)
-        resultdict = {
-                      "increase_hp_limit":increase_hp_limit
-                      }
-        newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
-        pipeline = self.r.pipeline()
-        pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
-        pipeline.hset(self.userkey,"hp_now",newhp)
-        pipeline.hset(self.userkey,"money",0)
-        pipeline.hset(self.userkey,"place",2)
-        pipeline.zincrby(self.forcekey,"胡二虎",2)
-        pipeline.execute()
-        outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
+        if self.userInfo.has_key('dongwan'):
+            if self.userInfo['dongwan'] == '10':
+                increase_hp_limit = random.randint(2, 4)
+                resultdict = {
+                              "increase_hp_limit":increase_hp_limit
+                              }
+                newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
+                pipeline = self.r.pipeline()
+                pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
+                pipeline.hset(self.userkey,"hp_now",newhp)
+                pipeline.hset(self.userkey,"money",0)
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.hincrby(self.userkey,"dongwan",1)
+                pipeline.zincrby(self.forcekey,"胡二虎",20)
+                pipeline.zincrby(self.inventorykey,"伟哥大法",1)
+                pipeline.execute()
+                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。因为一直大保健的缘故，你领悟到了伟哥大法。
+获得道具伟哥大法
+功力提升20点
+请选择:
+1.确认
+'''
+                return outStr.format(**resultdict)
+            else:
+                increase_hp_limit = random.randint(2, 4)
+                resultdict = {
+                              "increase_hp_limit":increase_hp_limit
+                              }
+                newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
+                pipeline = self.r.pipeline()
+                pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
+                pipeline.hset(self.userkey,"hp_now",newhp)
+                pipeline.hset(self.userkey,"money",0)
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.hincrby(self.userkey,"dongwan",1)
+                pipeline.zincrby(self.forcekey,"胡二虎",2)
+                pipeline.execute()
+                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
 功力提升2点
 请选择:
 1.确认
 '''
-        return outStr.format(**resultdict)
+                return outStr.format(**resultdict)
 
 class ManySwords(RandomEvent):
     def work(self):
@@ -90,13 +115,13 @@ class ManySwords(RandomEvent):
             pipeline = self.r.pipeline()
             pipeline.hset(self.userkey,"place",2)
             pipeline.zincrby(self.inventorykey,"万剑归宗",1)
-            pipeline.zincrby(self.forcekey,"胡二虎",25)
+            pipeline.zincrby(self.forcekey,"胡二虎",50)
             pipeline.hset(self.userkey,"manyswords",1)
             pipeline.zrem(self.inventorykey,"万骨魔剑","木剑","铁剑","塑料剑","橡皮剑")
             pipeline.execute()
             outStr = '''你遇到一个样貌落魄的男人,声称只要找到万骨魔剑,塑料剑,橡皮剑,铁剑,木剑,他就传授你绝学万剑归宗.
 你恰好有他要的东西。你抱着试试看的心态把东西交给了他。一瞬间脑海里面就浮现出了很多玄妙的招式。当你醒过来的时候感觉菊花有点痒，那个男人已经离开了，你学会了万剑归宗。
-功力提升25点
+功力提升50点
 请选择:
 1.确认
 '''
@@ -109,6 +134,33 @@ class ManySwords(RandomEvent):
 1.确认
 '''
             return outStr
+
+class FiveAir(RandomEvent):
+    def work(self):
+        if is_item_exist(self.inventoryInfo,"化功大法") and is_item_exist(self.inventoryInfo,"九阳神功") and is_item_exist(self.inventoryInfo,"混元功") and is_item_exist(self.inventoryInfo,"伟哥大法") and is_item_exist(self.inventoryInfo,"紫气朝阳决"):
+            pipeline = self.r.pipeline()
+            pipeline.hset(self.userkey,"place",2)
+            pipeline.zincrby(self.inventorykey,"五气朝元",1)
+            pipeline.zincrby(self.forcekey,"胡二虎",50)
+            pipeline.hset(self.userkey,"fiveair",1)
+            pipeline.zrem(self.inventorykey,"化功大法","九阳神功","紫气朝阳决","混元功","伟哥大法")
+            pipeline.execute()
+            outStr = '''你遇到一个仙风道骨的人正在打坐.向你讨要化功大法,九阳神功,紫气朝阳决,混元功,伟哥大法。
+你觉的此人样貌不凡,定是奇人,就将身上的5本秘籍交给了他。他则给你输了一道真气，你学会了道家上乘功夫五气朝元。
+功力提升50点
+请选择:
+1.确认
+'''
+            return outStr
+        else:
+            self.r.hset(self.userkey,"place",2)
+            outStr = '''你遇到一个仙风道骨的人正在打坐.向你讨要化功大法,九阳神功,紫气朝阳决,混元功,伟哥大法。
+你觉的此人样貌不凡,定是奇人,但你没有他要的东西。你就离开了。
+请选择:
+1.确认
+'''
+            return outStr
+
 
 class BaiGuDaoRen(RandomEvent):
     def work(self):
@@ -168,7 +220,7 @@ class BaiGuDaoRen(RandomEvent):
 1.确认
 '''
                 return outStr
-            
+
 ###################返回所有事件类，不包含父类RandomEvent    
 def all_events_class():
     allClassIncludeSuper = inspect.getmembers(sys.modules[__name__], inspect.isclass)
