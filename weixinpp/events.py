@@ -62,7 +62,32 @@ class NomalDogHit(RandomEvent):
 1.确认
 '''
         return outStr.format(**resultdict)
-    
+
+class BigDogHit(RandomEvent):
+    def work(self):
+        reduce_hp = random.randint(3, 5)
+        add_money = random.randint(100, 130)
+        available_items = ["狗肉","骨头"]
+        add_items = random.choice(available_items)
+        resultdict = {
+                      "reduce_hp":reduce_hp,
+                      "add_money":add_money,
+                      "add_items":add_items
+                      }
+        pipeline = self.r.pipeline()
+        pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
+        pipeline.hincrby(self.userkey,"money",add_money)
+        pipeline.zincrby(self.inventorykey,add_items,1)
+        pipeline.hset(self.userkey,"place",2)
+        pipeline.execute()
+        outStr = '''你遇到一条凶猛的狼狗向你袭来，你击杀了它，损失hp{reduce_hp},你获得了金钱:{add_money}，道具:{add_items}
+请选择:
+1.确认
+'''
+        return outStr.format(**resultdict)
+
+
+
 class DaBaoJian(RandomEvent):
     def work(self):
         if self.userInfo.has_key('dongwan'):
@@ -88,26 +113,26 @@ class DaBaoJian(RandomEvent):
 1.确认
 '''
                 return outStr.format(**resultdict)
-            else:
-                increase_hp_limit = random.randint(2, 4)
-                resultdict = {
-                              "increase_hp_limit":increase_hp_limit
-                              }
-                newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
-                pipeline = self.r.pipeline()
-                pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
-                pipeline.hset(self.userkey,"hp_now",newhp)
-                pipeline.hset(self.userkey,"money",0)
-                pipeline.hset(self.userkey,"place",2)
-                pipeline.hincrby(self.userkey,"dongwan",1)
-                pipeline.zincrby(self.forcekey,"胡二虎",2)
-                pipeline.execute()
-                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
+        else:
+            increase_hp_limit = random.randint(2, 4)
+            resultdict = {
+                          "increase_hp_limit":increase_hp_limit
+                          }
+            newhp = int(self.userInfo['hp_limit']) + increase_hp_limit
+            pipeline = self.r.pipeline()
+            pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
+            pipeline.hset(self.userkey,"hp_now",newhp)
+            pipeline.hset(self.userkey,"money",0)
+            pipeline.hset(self.userkey,"place",2)
+            pipeline.hincrby(self.userkey,"dongwan",1)
+            pipeline.zincrby(self.forcekey,"胡二虎",2)
+            pipeline.execute()
+            outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
 功力提升2点
 请选择:
 1.确认
 '''
-                return outStr.format(**resultdict)
+            return outStr.format(**resultdict)
 
 class ManySwords(RandomEvent):
     def work(self):
