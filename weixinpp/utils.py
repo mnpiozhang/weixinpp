@@ -77,7 +77,7 @@ def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r
     '''
     if userInfo.has_key('baigudaoren'):
         #判断有key叫baigudaoren且value为3时，白骨道人事件已触发并且流程结束。不再出现。
-        if userInfo['baigudaoren'] == "3":
+        if userInfo['baigudaoren'] == "4":
             eventDict.pop('BaiGuDaoRen')
     #判断有key叫manyswords，则万剑归宗事件已经结束。不再出现
     elif userInfo.has_key('manyswords'):

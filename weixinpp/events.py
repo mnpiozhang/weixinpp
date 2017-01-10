@@ -232,10 +232,35 @@ class BaiGuDaoRen(RandomEvent):
                 pipeline.hset(self.userkey,"place",2)
                 pipeline.hset(self.userkey,"baigudaoren",3)
                 pipeline.zincrby(self.forcekey,"胡二虎",10)
+                pipeline.zadd(self.forcekey,"白骨道人",40)
                 pipeline.execute()
                 outStr = '''你还是不死心，决定最后再去见一次白骨道人。在离白骨洞很远的地方就听到了厮杀声。你上前一看有人正围攻白骨洞，你立即前去助阵。在身负重伤的情况下帮助白骨道人击败敌人。
-白骨道人最后还是死了，临死前她告诉你之前的敌人是驼峰山庄的人，并留给了你她的一样宝物。
+白骨道人最后还是死了，临死前她告诉你之前的敌人是蜀山剑派的人，并留给了你她的一样宝物。
 损失hp{reduce_hp},获得道具:{add_items}，功力提升10
+请选择:
+1.确认
+'''
+                return outStr.format(**resultdict)
+            elif self.userInfo["baigudaoren"] == "3":
+                reduce_hp = random.randint(4, 5)
+                #available_items = ["紫气朝阳决"]
+                #add_items = random.choice(available_items)
+                resultdict = {
+                              "reduce_hp":reduce_hp
+                              }
+                pipeline = self.r.pipeline()
+                pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
+                #pipeline.zincrby(self.inventorykey,add_items,1)
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.hset(self.userkey,"baigudaoren",4)
+                pipeline.zincrby(self.forcekey,"胡二虎",10)
+                pipeline.zadd(self.forcekey,"白骨道人",400)
+                pipeline.zadd(self.forcekey,"李逍遥",150)
+                pipeline.execute()
+                outStr = '''你来到蜀山，为报之前白骨道人的仇与蜀山剑派的弟子大打出手，最后蜀山掌门李逍遥出动将你教训了一顿。突然有人从背后偷袭了李逍遥，原来是白骨道人，她并没有死，她当年被李逍遥调戏怀恨在心，所以利用了拥有绝世神功的你。你见势不妙，只能选择正义的撤退。。。
+损失hp{reduce_hp},功力提升10
+白骨道人重出江湖
+李逍遥被偷袭，功力大损
 请选择:
 1.确认
 '''
@@ -247,6 +272,7 @@ class BaiGuDaoRen(RandomEvent):
                 pipeline.hset(self.userkey,"place",2)
                 pipeline.zincrby(self.inventorykey,"骨头",-2)
                 pipeline.hset(self.userkey,"baigudaoren",1)
+                pipeline.zadd(self.forcekey,"白骨道人",25)
                 pipeline.execute()
                 outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出2根骨头，不然就要你好看。
 你一摸口袋，发现之前打狗得到了很多狗骨头，你交出了2根给白骨道人后离开了。
@@ -255,9 +281,12 @@ class BaiGuDaoRen(RandomEvent):
 '''
                 return outStr
             else:
-                self.r.hset(self.userkey,"baigudaoren",1)
-                self.r.hset(self.userkey,"place",2)
-                self.r.zincrby(self.forcekey,"胡二虎",3)
+                pipeline = self.r.pipeline()
+                pipeline.hset(self.userkey,"baigudaoren",1)
+                pipeline.hset(self.userkey,"place",2)
+                pipeline.zincrby(self.forcekey,"胡二虎",3)
+                pipeline.zadd(self.forcekey,"白骨道人",25)
+                pipeline.execute()
                 outStr = '''忽然阴风阵阵，让你觉的毛骨悚然，原来你误闯白骨洞。只见一名白衣女子出现在你面前。自称自己是白骨道人，你打扰了她练功，除非交出2根骨头，不然就要你好看。
 由于你没有足够的骨头，只能上前应战。大战三百回合后，第二天一早你离开了白骨洞。
 功力提升3点
