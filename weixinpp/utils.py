@@ -57,10 +57,17 @@ def buySomething(itemname,price,userkey,inventorykey,userInfo,r):
         pipeline.hincrby(userkey,"money",-price)
         pipeline.zincrby(inventorykey,itemname,1)
         pipeline.execute()
-        return cf.SHOP_BEGIN_BUYOK.format(**r.hgetall(userkey))
+        #地点1 商店
+        if userInfo["place"] == "1":
+            return cf.SHOP_BEGIN_BUYOK.format(**r.hgetall(userkey))
+        #地点3 盗墓
+        elif userInfo["place"] == "3":
+            return cf.DAOMU_BEGIN_BUYOK.format(**r.hgetall(userkey))
     else:
-        return cf.SHOP_BEGIN_NOMONEY
-
+        if userInfo["place"] == "1":
+            return cf.SHOP_BEGIN_NOMONEY
+        elif userInfo["place"] == "3":
+            return cf.DAOMU_BEGIN_NOMONEY
 
 def hitDogEvent(userkey,inventorykey,forcekey,userInfo,inventoryInfo,forceInfo,r):
     eventDict = {}
@@ -155,5 +162,26 @@ def goOnGames(messageReceive,userkey,inventorykey,forcekey,r):
             return cf.COMEBACK_BEGIN
         elif inputInfo in ["?","？","help"] :
             return cf.HELP_STR
+        else:
+            return "hehe,请做一个选择"
+    #地点3 盗墓事件
+    elif userInfo["place"] == "3":
+        if inputInfo == "1":
+            return buySomething("混元功",2000,userkey,inventorykey,userInfo,r)
+        elif inputInfo == "2":
+            return buySomething("紫气朝阳决",3000,userkey,inventorykey,userInfo,r)
+        elif inputInfo == "3":
+            return buySomething("橡皮剑",3000,userkey,inventorykey,userInfo,r)
+        elif inputInfo == "4":
+            return buySomething("塑料剑",5000,userkey,inventorykey,userInfo,r)
+        elif inputInfo == "5":
+            return buySomething("不可名状的小册子",6666,userkey,inventorykey,userInfo,r)
+        elif inputInfo == "0":
+            userInfo["place"] = 0
+            r.hmset(userkey, userInfo)
+            return cf.COMEBACK_BEGIN
+        elif inputInfo == "c":
+            #将两个字典合并起来
+            return cf.ROLE_STATE.format(**dict({"items":itemslist_to_str(inventoryInfo),"force":role_force(forceInfo)},**userInfo))
         else:
             return "hehe,请做一个选择"

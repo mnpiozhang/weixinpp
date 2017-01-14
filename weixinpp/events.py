@@ -67,7 +67,7 @@ class BigDogHit(RandomEvent):
     def work(self):
         reduce_hp = random.randint(3, 5)
         add_money = random.randint(100, 130)
-        available_items = ["狗肉","骨头"]
+        available_items = ["狗肉","骨头","九阳神功"]
         add_items = random.choice(available_items)
         resultdict = {
                       "reduce_hp":reduce_hp,
@@ -86,6 +86,41 @@ class BigDogHit(RandomEvent):
 '''
         return outStr.format(**resultdict)
 
+
+class GetManyMoney(RandomEvent):
+    def work(self):
+        reduce_hp = random.randint(1, 2)
+        add_money = random.randint(200, 500)
+        resultdict = {
+                      "reduce_hp":reduce_hp,
+                      "add_money":add_money
+                      }
+        pipeline = self.r.pipeline()
+        pipeline.hincrby(self.userkey,"hp_now",-reduce_hp)
+        pipeline.hincrby(self.userkey,"money",add_money)
+        pipeline.hset(self.userkey,"place",2)
+        pipeline.execute()
+        outStr = '''你看到有人欺压百姓，作为正义的伙伴，不能坐视不理，教训完恶霸后，狠狠敲了一笔然后离开了，你损失hp{reduce_hp},你获得了金钱:{add_money}
+请选择:
+1.确认
+'''
+        return outStr.format(**resultdict)
+
+class DaoMuBiJi(RandomEvent):
+    def work(self):
+        pipeline = self.r.pipeline()
+        pipeline.hset(self.userkey,"place",3)
+        pipeline.execute()
+        outStr = '''你遇到了江湖赫赫有名的盗墓王张起灵，他说刚干了一票正准备上交国家，并示意你给点好处可以让你挑两件。
+你看了看他的东西，现在选择是：
+1.混元功 2000
+2.紫气朝阳决 3000
+3.橡皮剑 3000
+4.塑料剑 5000
+5.不可名状的小册子 6666
+0.啥也不选上交国家
+c.查看状态'''
+        return outStr
 
 
 class DaBaoJian(RandomEvent):
