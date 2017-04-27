@@ -125,6 +125,7 @@ c.查看状态'''
 
 class DaBaoJian(RandomEvent):
     def work(self):
+        print self.userInfo
         if self.userInfo.has_key('dongwan'):
             if self.userInfo['dongwan'] == '10':
                 increase_hp_limit = random.randint(2, 4)
@@ -135,7 +136,7 @@ class DaBaoJian(RandomEvent):
                 pipeline = self.r.pipeline()
                 pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
                 pipeline.hset(self.userkey,"hp_now",newhp)
-                if self.userInfo['money'] >= 1000:
+                if int(self.userInfo['money']) >= 1000:
                     pipeline.hincrby(self.userkey,"money",-1000)
                 else:
                     pipeline.hset(self.userkey,"money",0)
@@ -160,7 +161,7 @@ class DaBaoJian(RandomEvent):
                 pipeline = self.r.pipeline()
                 pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
                 pipeline.hset(self.userkey,"hp_now",newhp)
-                if self.userInfo['money'] >= 1000:
+                if int(self.userInfo['money']) >= 1000:
                     pipeline.hincrby(self.userkey,"money",-1000)
                 else:
                     pipeline.hset(self.userkey,"money",0)
@@ -183,7 +184,7 @@ class DaBaoJian(RandomEvent):
             pipeline = self.r.pipeline()
             pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
             pipeline.hset(self.userkey,"hp_now",newhp)
-            if self.userInfo['money'] >= 1000:
+            if int(self.userInfo['money']) >= 1000:
                 pipeline.hincrby(self.userkey,"money",-1000)
             else:
                 pipeline.hset(self.userkey,"money",0)
