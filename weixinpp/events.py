@@ -135,13 +135,16 @@ class DaBaoJian(RandomEvent):
                 pipeline = self.r.pipeline()
                 pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
                 pipeline.hset(self.userkey,"hp_now",newhp)
-                pipeline.hset(self.userkey,"money",0)
+                if self.userInfo['money'] >= 1000:
+                    pipeline.hincrby(self.userkey,"money",-1000)
+                else:
+                    pipeline.hset(self.userkey,"money",0)
                 pipeline.hset(self.userkey,"place",2)
                 pipeline.hincrby(self.userkey,"dongwan",1)
                 pipeline.zincrby(self.forcekey,"胡二虎",20)
                 pipeline.zincrby(self.inventorykey,"伟哥大法",1)
                 pipeline.execute()
-                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。因为一直大保健的缘故，你领悟到了伟哥大法。
+                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花了一大笔钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。因为一直大保健的缘故，你领悟到了伟哥大法。
 获得道具伟哥大法
 功力提升20点
 请选择:
@@ -157,12 +160,15 @@ class DaBaoJian(RandomEvent):
                 pipeline = self.r.pipeline()
                 pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
                 pipeline.hset(self.userkey,"hp_now",newhp)
-                pipeline.hset(self.userkey,"money",0)
+                if self.userInfo['money'] >= 1000:
+                    pipeline.hincrby(self.userkey,"money",-1000)
+                else:
+                    pipeline.hset(self.userkey,"money",0)
                 pipeline.hset(self.userkey,"place",2)
                 pipeline.hincrby(self.userkey,"dongwan",1)
                 pipeline.zincrby(self.forcekey,"胡二虎",2)
                 pipeline.execute()
-                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
+                outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花了一大笔钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
 功力提升2点
 请选择:
 1.确认
@@ -177,12 +183,15 @@ class DaBaoJian(RandomEvent):
             pipeline = self.r.pipeline()
             pipeline.hincrby(self.userkey,"hp_limit",increase_hp_limit)
             pipeline.hset(self.userkey,"hp_now",newhp)
-            pipeline.hset(self.userkey,"money",0)
+            if self.userInfo['money'] >= 1000:
+                pipeline.hincrby(self.userkey,"money",-1000)
+            else:
+                pipeline.hset(self.userkey,"money",0)
             pipeline.hset(self.userkey,"place",2)
             pipeline.hincrby(self.userkey,"dongwan",1)
             pipeline.zincrby(self.forcekey,"胡二虎",2)
             pipeline.execute()
-            outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花光了所有钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
+            outStr = '''不知不觉间你来到了东莞楼，决定大保健一发，然后花天酒地花了一大笔钱。HP上限提高了{increase_hp_limit} 并且恢复了所有体力。
 功力提升2点
 请选择:
 1.确认
